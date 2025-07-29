@@ -1,0 +1,12 @@
+# Node.js generated files
+node_modules/
+
+# Environment variables
+.env
+
+# Logs
+logs/
+*.log
+
+# Dependency directories
+package-lock.json

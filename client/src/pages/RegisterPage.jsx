@@ -37,7 +37,7 @@ export default function AuthPage() {
         <Tabs defaultValue="register" className="w-full">
           <TabsList className="grid w-full grid-cols-2 mb-4">
             <TabsTrigger value="register">Register</TabsTrigger>
-            <TabsTrigger value="login">Sign In</TabsTrigger>
+            <TabsTrigger value="login">Login</TabsTrigger>
           </TabsList>
           
           <TabsContent value="register" className="mt-0">
@@ -112,7 +112,7 @@ export default function AuthPage() {
             <Card className="w-full">
               <CardHeader className="space-y-1">
                 <CardTitle className="text-2xl font-bold text-center">
-                  Sign in
+                  Login
                 </CardTitle>
                 <CardDescription className="text-center">
                   Enter your email and password to access your account
@@ -145,7 +145,7 @@ export default function AuthPage() {
                     </div>
                   </div>
                   <Button className="w-full" type="submit">
-                    Sign in
+                    Login
                   </Button>
                 </form>
               </CardContent>

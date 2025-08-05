@@ -1,13 +1,19 @@
 import { useState } from 'react'
-function App() {
-  const [count, setCount] = useState(0)
+import { Route, Routes, BrowserRouter as Router } from "react-router-dom"
+import RegisterPage from './pages/RegisterPage'
+import LoginPage from './pages/LoginPage'
 
+function App() {
   return (
-    <>
-      <div className=''>
-        <h1>Hello</h1>
-      </div>
-    </>
+    <Router>
+      <Routes>
+        {/* <Route path="/" element={<HomePage />} /> */}
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        {/* Catch-all for unmatched routes */}
+        {/* <Route path="*" element={<NotFoundPage />} /> */}
+      </Routes>
+    </Router>
   )
 }
 

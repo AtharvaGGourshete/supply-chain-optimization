@@ -211,194 +211,212 @@ export default function RegisterPage() {
   );
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0A0A0A] px-4">
-      <div className="w-full max-w-md">
-        {successMessage && (
-          <div className="mb-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded">
-            {successMessage}
-          </div>
-        )}
+    <div className="min-h-screen flex bg-[#32936F]">
+      {/* Left side - Form */}
+      <div className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8">
+        <div className="w-full max-w-md space-y-8">
+          {successMessage && (
+            <div className="p-3 bg-green-100 border border-green-400 text-green-700 rounded">
+              {successMessage}
+            </div>
+          )}
 
-        <Tabs defaultValue="register" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-4">
-            <TabsTrigger value="register" className="cursor-pointer">
-              Register
-            </TabsTrigger>
-            <TabsTrigger value="login" className="cursor-pointer">
-              Login
-            </TabsTrigger>
-          </TabsList>
+          <Tabs defaultValue="register" className="w-full ">
+            <TabsList className="grid w-full grid-cols-2 mb-6">
+              <TabsTrigger value="register" className="cursor-pointer">
+                Register
+              </TabsTrigger>
+              <TabsTrigger value="login" className="cursor-pointer">
+                Login
+              </TabsTrigger>
+            </TabsList>
 
-          <TabsContent value="register" className="mt-0">
-            <Card className="w-full">
-              <CardHeader className="space-y-1">
-                <CardTitle className="text-2xl font-bold text-center">
-                  Create account
-                </CardTitle>
-                <CardDescription className="text-center">
-                  Enter your details to create your account
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <form className="space-y-4" onSubmit={handleRegisterSubmit}>
-                  {registerError && (
-                    <div className="p-3 bg-red-100 border border-red-400 text-red-700 rounded text-sm">
-                      {registerError}
-                    </div>
-                  )}
-
-                  <div className="space-y-2">
-                    <Label htmlFor="register-name">Full Name</Label>
-                    <Input
-                      id="register-name"
-                      name="name"
-                      type="text"
-                      placeholder="Enter your full name"
-                      value={registerData.name}
-                      onChange={handleRegisterChange}
-                      required
-                      disabled={isRegisterLoading}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="register-email">Email</Label>
-                    <Input
-                      id="register-email"
-                      name="email"
-                      type="email"
-                      placeholder="Enter your email"
-                      value={registerData.email}
-                      onChange={handleRegisterChange}
-                      required
-                      disabled={isRegisterLoading}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="register-password">Password</Label>
-                    <div className="relative">
-                      <Input
-                        id="register-password"
-                        name="password"
-                        type={showRegisterPassword ? "text" : "password"}
-                        placeholder="Create a password"
-                        value={registerData.password}
-                        onChange={handleRegisterChange}
-                        required
-                        disabled={isRegisterLoading}
-                      />
-                      <PasswordToggle
-                        show={showRegisterPassword}
-                        onToggle={() => setShowRegisterPassword(!showRegisterPassword)}
-                      />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="confirm-password">Confirm Password</Label>
-                    <div className="relative">
-                      <Input
-                        id="confirm-password"
-                        name="confirmPassword"
-                        type={showConfirmPassword ? "text" : "password"}
-                        placeholder="Confirm your password"
-                        value={registerData.confirmPassword}
-                        onChange={handleRegisterChange}
-                        required
-                        disabled={isRegisterLoading}
-                      />
-                      <PasswordToggle
-                        show={showConfirmPassword}
-                        onToggle={() => setShowConfirmPassword(!showConfirmPassword)}
-                      />
-                    </div>
-                  </div>
-                  <Button
-                    className="w-full"
-                    type="submit"
-                    disabled={isRegisterLoading}
-                  >
-                    {isRegisterLoading ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Creating account...
-                      </>
-                    ) : (
-                      "Create account"
+            <TabsContent value="register" className="mt-0">
+              <Card className="w-full border-0 shadow-none p-10">
+                <CardHeader className="space-y-1 px-0">
+                  <CardTitle className="text-2xl font-bold text-left">
+                    Create account
+                  </CardTitle>
+                  <CardDescription className="text-left">
+                    Enter your details to create your account
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4 px-0">
+                  <form className="space-y-4" onSubmit={handleRegisterSubmit}>
+                    {registerError && (
+                      <div className="p-3 bg-red-100 border border-red-400 text-red-700 rounded text-sm">
+                        {registerError}
+                      </div>
                     )}
-                  </Button>
-                </form>
-              </CardContent>
-            </Card>
-          </TabsContent>
 
-          <TabsContent value="login" className="mt-0">
-            <Card className="w-full">
-              <CardHeader className="space-y-1">
-                <CardTitle className="text-2xl font-bold text-center">
-                  Login
-                </CardTitle>
-                <CardDescription className="text-center">
-                  Enter your email and password to access your account
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <form className="space-y-4" onSubmit={handleLoginSubmit}>
-                  {loginError && (
-                    <div className="p-3 bg-red-100 border border-red-400 text-red-700 rounded text-sm">
-                      {loginError}
-                    </div>
-                  )}
-
-                  <div className="space-y-2">
-                    <Label htmlFor="login-email">Email</Label>
-                    <Input
-                      id="login-email"
-                      name="email"
-                      type="email"
-                      placeholder="Enter your email"
-                      value={loginData.email}
-                      onChange={handleLoginChange}
-                      required
-                      disabled={isLoginLoading}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="login-password">Password</Label>
-                    <div className="relative">
+                    <div className="space-y-2">
+                      <Label htmlFor="register-name">Full Name</Label>
                       <Input
-                        id="login-password"
-                        name="password"
-                        type={showLoginPassword ? "text" : "password"}
-                        placeholder="Enter your password"
-                        value={loginData.password}
+                        id="register-name"
+                        name="name"
+                        type="text"
+                        placeholder="Enter your full name"
+                        value={registerData.name}
+                        onChange={handleRegisterChange}
+                        required
+                        disabled={isRegisterLoading}
+                        className="h-12"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="register-email">Email</Label>
+                      <Input
+                        id="register-email"
+                        name="email"
+                        type="email"
+                        placeholder="Enter your email"
+                        value={registerData.email}
+                        onChange={handleRegisterChange}
+                        required
+                        disabled={isRegisterLoading}
+                        className="h-12"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="register-password">Password</Label>
+                      <div className="relative">
+                        <Input
+                          id="register-password"
+                          name="password"
+                          type={showRegisterPassword ? "text" : "password"}
+                          placeholder="Create a password"
+                          value={registerData.password}
+                          onChange={handleRegisterChange}
+                          required
+                          disabled={isRegisterLoading}
+                          className="h-12"
+                        />
+                        <PasswordToggle
+                          show={showRegisterPassword}
+                          onToggle={() => setShowRegisterPassword(!showRegisterPassword)}
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="confirm-password">Confirm Password</Label>
+                      <div className="relative">
+                        <Input
+                          id="confirm-password"
+                          name="confirmPassword"
+                          type={showConfirmPassword ? "text" : "password"}
+                          placeholder="Confirm your password"
+                          value={registerData.confirmPassword}
+                          onChange={handleRegisterChange}
+                          required
+                          disabled={isRegisterLoading}
+                          className="h-12"
+                        />
+                        <PasswordToggle
+                          show={showConfirmPassword}
+                          onToggle={() => setShowConfirmPassword(!showConfirmPassword)}
+                        />
+                      </div>
+                    </div>
+                    <Button
+                      className="w-full h-12 mt-6 rounded-full" 
+                      type="submit"
+                      disabled={isRegisterLoading}
+                    >
+                      {isRegisterLoading ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Creating account...
+                        </>
+                      ) : (
+                        "Create account"
+                      )}
+                    </Button>
+                  </form>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="login" className="mt-0">
+              <Card className="w-full border-0 shadow-none p-10">
+                <CardHeader className="space-y-1 px-0 ">
+                  <CardTitle className="text-2xl font-bold text-left">
+                    Login
+                  </CardTitle>
+                  <CardDescription className="text-left">
+                    Enter your email and password to access your account
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4 px-0">
+                  <form className="space-y-4" onSubmit={handleLoginSubmit}>
+                    {loginError && (
+                      <div className="p-3 bg-red-100 border border-red-400 text-red-700 rounded text-sm">
+                        {loginError}
+                      </div>
+                    )}
+
+                    <div className="space-y-2">
+                      <Label htmlFor="login-email">Email</Label>
+                      <Input
+                        id="login-email"
+                        name="email"
+                        type="email"
+                        placeholder="Enter your email"
+                        value={loginData.email}
                         onChange={handleLoginChange}
                         required
                         disabled={isLoginLoading}
-                      />
-                      <PasswordToggle
-                        show={showLoginPassword}
-                        onToggle={() => setShowLoginPassword(!showLoginPassword)}
+                        className="h-12"
                       />
                     </div>
-                  </div>
-                  <Button
-                    className="w-full"
-                    type="submit"
-                    disabled={isLoginLoading}
-                  >
-                    {isLoginLoading ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Logging in...
-                      </>
-                    ) : (
-                      "Login"
-                    )}
-                  </Button>
-                </form>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+                    <div className="space-y-2">
+                      <Label htmlFor="login-password">Password</Label>
+                      <div className="relative">
+                        <Input
+                          id="login-password"
+                          name="password"
+                          type={showLoginPassword ? "text" : "password"}
+                          placeholder="Enter your password"
+                          value={loginData.password}
+                          onChange={handleLoginChange}
+                          required
+                          disabled={isLoginLoading}
+                          className="h-12"
+                        />
+                        <PasswordToggle
+                          show={showLoginPassword}
+                          onToggle={() => setShowLoginPassword(!showLoginPassword)}
+                        />
+                      </div>
+                    </div>
+                    <Button
+                      className="w-full h-12 mt-6 rounded-full"
+                      type="submit"
+                      disabled={isLoginLoading}
+                    >
+                      {isLoginLoading ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Logging in...
+                        </>
+                      ) : (
+                        "Login"
+                      )}
+                    </Button>
+                  </form>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        </div>
+      </div>
+
+      {/* Right side - Image */}
+      <div className="hidden lg:flex flex-1 relative">
+        <img 
+          src="authimage1.png" 
+          alt="Authentication illustration" 
+          className="w-full h-full object-cover"
+        />
       </div>
     </div>
   );

@@ -34,9 +34,9 @@ const SleekNavbar = () => {
             <div className="flex items-center">
               <div style={{ position: "relative", height: "50px" }}>
                 <TextPressure
-                className="tracking-wider"
+                  className="tracking-wider font-bold"
                   text="ChainSaw"
-                  flex={false} 
+                  flex={false}
                   alpha={false}
                   stroke={false}
                   width={true}
@@ -54,106 +54,11 @@ const SleekNavbar = () => {
               <div className="ml-10 flex items-baseline space-x-8">
                 {/* Products Dropdown */}
                 <div className="relative group">
-                  <button className="text-[#DDDBCB] dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 text-sm font-medium transition-colors duration-200 flex items-center">
-                    Products
-                    <svg
-                      className="ml-1 h-4 w-4 transform group-hover:rotate-180 transition-transform duration-200"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M19 9l-7 7-7-7"
-                      ></path>
-                    </svg>
-                  </button>
-                  {/* Dropdown Menu */}
-                  <div className="absolute left-0 mt-2 w-64 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform group-hover:translate-y-0 translate-y-2">
-                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2">
-                      <a
-                        href="#"
-                        className="block px-4 py-3 text-sm text-[#DDDBCB] dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-150"
-                      >
-                        <div className="font-medium">Analytics Dashboard</div>
-                        <div className="text-xs text-gray-500 dark:text-gray-400">
-                          Real-time insights and metrics
-                        </div>
-                      </a>
-                      <a
-                        href="#"
-                        className="block px-4 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-150"
-                      >
-                        <div className="font-medium">API Integration</div>
-                        <div className="text-xs text-gray-500 dark:text-gray-400">
-                          Connect with external services
-                        </div>
-                      </a>
-                      <a
-                        href="#"
-                        className="block px-4 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-150"
-                      >
-                        <div className="font-medium">Automation Tools</div>
-                        <div className="text-xs text-gray-500 dark:text-gray-400">
-                          Streamline your workflow
-                        </div>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Solutions Dropdown */}
-                <div className="relative group">
-                  <button className="text-[#DDDBCB] dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 text-sm font-medium transition-colors duration-200 flex items-center">
-                    Solutions
-                    <svg
-                      className="ml-1 h-4 w-4 transform group-hover:rotate-180 transition-transform duration-200"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M19 9l-7 7-7-7"
-                      ></path>
-                    </svg>
-                  </button>
-                  {/* Dropdown Menu */}
-                  <div className="absolute left-0 mt-2 w-64 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform group-hover:translate-y-0 translate-y-2">
-                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2">
-                      <a
-                        href="#"
-                        className="block px-4 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-150"
-                      >
-                        <div className="font-medium">Enterprise</div>
-                        <div className="text-xs text-gray-500 dark:text-gray-400">
-                          Scale your business operations
-                        </div>
-                      </a>
-                      <a
-                        href="#"
-                        className="block px-4 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-150"
-                      >
-                        <div className="font-medium">Small Business</div>
-                        <div className="text-xs text-gray-500 dark:text-gray-400">
-                          Perfect for growing teams
-                        </div>
-                      </a>
-                      <a
-                        href="#"
-                        className="block px-4 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-150"
-                      >
-                        <div className="font-medium">Startups</div>
-                        <div className="text-xs text-gray-500 dark:text-gray-400">
-                          Launch faster with our tools
-                        </div>
-                      </a>
-                    </div>
-                  </div>
+                  <Link to="/warehouse">
+                    <button className="text-[#DDDBCB] dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 text-sm font-medium transition-colors duration-200 flex items-center cursor-pointer">
+                      Warehouse
+                    </button>
+                  </Link>
                 </div>
 
                 {/* Regular Links */}
@@ -190,10 +95,10 @@ const SleekNavbar = () => {
                   ></path>
                 </svg>
               </button>
-              <Link to='/register'>
-              <Button className="text-[#DDDBCB] hover:bg-[#DDDBCB] hover:text-black cursor-pointer">
-                Sign Up
-              </Button>
+              <Link to="/register">
+                <Button className="text-[#DDDBCB] hover:bg-[#DDDBCB] hover:text-black cursor-pointer">
+                  Sign Up
+                </Button>
               </Link>
 
               {/* Mobile menu button */}

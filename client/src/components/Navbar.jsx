@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "./ui/button";
-import TextPressure from "./TextPressure/TextPressure";
 import { Link } from "react-router-dom";
+import { LineShadowText } from "./magicui/line-shadow-text";
+
 
 const SleekNavbar = () => {
   const [isDark, setIsDark] = useState(false);
@@ -31,9 +32,9 @@ const SleekNavbar = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
-            <div className="flex items-center">
-              <div style={{ position: "relative", height: "50px" }}>
-                <TextPressure
+            {/* <div className="flex items-center">
+              <div style={{ position: "absolute", height: "50px" }}> */}
+                {/* <TextPressure
                   className="tracking-wider font-bold"
                   text="ChainSaw"
                   flex={false}
@@ -45,9 +46,10 @@ const SleekNavbar = () => {
                   textColor="#ffffff"
                   strokeColor="#ff0000"
                   minFontSize={40}
-                />
-              </div>
-            </div>
+                /> */}
+                <span className="text-2xl text-[#DDDBCB]">ChainSaw</span>
+              {/* </div>
+            </div> */}
 
             {/* Desktop Navigation */}
             <div className="hidden md:block">

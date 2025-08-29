@@ -63,6 +63,14 @@ const SleekNavbar = () => {
                   </Link>
                 </div>
 
+                <div className="relative group">
+                  <Link to="/optimize-routes">
+                    <button className="text-[#DDDBCB] dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 text-sm font-medium transition-colors duration-200 flex items-center cursor-pointer">
+                      Route Optimization
+                    </button>
+                  </Link>
+                </div>
+
                 {/* Regular Links */}
                 <a
                   href="#"

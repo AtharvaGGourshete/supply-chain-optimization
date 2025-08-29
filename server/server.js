@@ -3,6 +3,7 @@ import { connectDB } from "./config/db.js";
 import cors from 'cors'; 
 import authRoutes from "./routes/auth.js";
 import forecastRoutes from "./routes/forecastRoutes.js"
+import optimizeRouter from "./routes/optimize.js"
 import dotenv from 'dotenv';
 
 const app = express();
@@ -33,6 +34,8 @@ dotenv.config();
 app.use("/", authRoutes);
 // Register the forecast routes
 app.use('/api', forecastRoutes);
+// Optimize routes
+app.use('/api', optimizeRouter);
 
 app.listen(PORT, () => {
   console.log(`Server is running on PORT ${PORT}`);

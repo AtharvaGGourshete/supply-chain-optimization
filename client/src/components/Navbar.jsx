@@ -3,7 +3,6 @@ import { Button } from "./ui/button";
 import { Link } from "react-router-dom";
 import { LineShadowText } from "./magicui/line-shadow-text";
 
-
 const SleekNavbar = () => {
   const [isDark, setIsDark] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -28,28 +27,19 @@ const SleekNavbar = () => {
   return (
     <>
       {/* Navbar */}
-      <nav className="fixed top-0 w-full z-50 bg-[#101010] dark:bg-gray-900/80 backdrop-blur-md ">
+      <nav className="fixed top-0 w-full z-50 backdrop-blur-xl border-b border-[#DDDBCB]/10 p-2">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
-            {/* <div className="flex items-center">
-              <div style={{ position: "absolute", height: "50px" }}> */}
-                {/* <TextPressure
-                  className="tracking-wider font-bold"
-                  text="ChainSaw"
-                  flex={false}
-                  alpha={false}
-                  stroke={false}
-                  width={true}
-                  weight={true}
-                  italic={true}
-                  textColor="#ffffff"
-                  strokeColor="#ff0000"
-                  minFontSize={40}
-                /> */}
-                <span className="text-2xl text-[#DDDBCB]">ChainSaw</span>
-              {/* </div>
-            </div> */}
+            <div className="flex items-center">
+              <Link to="/">
+                <img
+                  src="/box.png"
+                  alt="ChainSaw Logo"
+                  className="h-10 w-10 mr-2"
+                />
+              </Link>
+            </div>
 
             {/* Desktop Navigation */}
             <div className="hidden md:block">
@@ -57,7 +47,7 @@ const SleekNavbar = () => {
                 {/* Products Dropdown */}
                 <div className="relative group">
                   <Link to="/warehouse">
-                    <button className="text-[#DDDBCB] dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 text-sm font-medium transition-colors duration-200 flex items-center cursor-pointer">
+                    <button className="text-[#DDDBCB] dark:text-gray-300 hover:text-[#CEAF53] dark:hover:text-blue-400 px-3 py-2 text-sm font-medium transition-colors duration-200 flex items-center cursor-pointer">
                       Warehouse
                     </button>
                   </Link>
@@ -65,7 +55,7 @@ const SleekNavbar = () => {
 
                 <div className="relative group">
                   <Link to="/optimize-routes">
-                    <button className="text-[#DDDBCB] dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 text-sm font-medium transition-colors duration-200 flex items-center cursor-pointer">
+                    <button className="text-[#DDDBCB] dark:text-gray-300 hover:text-[#CEAF53] dark:hover:text-blue-400 px-3 py-2 text-sm font-medium transition-colors duration-200 flex items-center cursor-pointer">
                       Route Optimization
                     </button>
                   </Link>
@@ -74,13 +64,13 @@ const SleekNavbar = () => {
                 {/* Regular Links */}
                 <a
                   href="#"
-                  className="text-[#DDDBCB] dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 text-sm font-medium transition-colors duration-200"
+                  className="text-[#DDDBCB] dark:text-gray-300 hover:text-[#CEAF53] dark:hover:text-blue-400 px-3 py-2 text-sm font-medium transition-colors duration-200"
                 >
                   Documentation
                 </a>
                 <a
                   href="#"
-                  className="text-[#DDDBCB] dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 text-sm font-medium transition-colors duration-200"
+                  className="text-[#DDDBCB] dark:text-gray-300 hover:text-[#CEAF53] dark:hover:text-blue-400 px-3 py-2 text-sm font-medium transition-colors duration-200"
                 >
                   Pricing
                 </a>
@@ -89,22 +79,6 @@ const SleekNavbar = () => {
 
             {/* Right Side Actions */}
             <div className="flex items-center space-x-4">
-              {/* Search Button */}
-              <button className="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors duration-200">
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                  ></path>
-                </svg>
-              </button>
               <Link to="/register">
                 <Button className="text-[#DDDBCB] hover:bg-[#DDDBCB] hover:text-black cursor-pointer">
                   Sign Up

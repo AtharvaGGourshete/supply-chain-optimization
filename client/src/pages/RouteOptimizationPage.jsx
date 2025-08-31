@@ -21,7 +21,7 @@ const RouteOptimizationPage = () => {
   return (
     <>
     <Navbar />
-    <div className="min-h-screen bg-black text-white flex flex-col items-center p-6">
+    <div className="min-h-screen bg-[#101010] text-white flex flex-col items-center p-6">
       <h1 className="text-3xl font-bold mt-20 mb-6">Route Optimization</h1>
 
       {error && (

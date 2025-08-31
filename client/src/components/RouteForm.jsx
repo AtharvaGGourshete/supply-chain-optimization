@@ -65,7 +65,7 @@ const RouteForm = ({ onRoutesOptimized, onError, setLoading }) => {
 
 
   return (
-    <Card className="bg-neutral-900 border border-neutral-700 text-white">
+    <Card className="bg-[#131314] border border-neutral-700 text-white">
       <CardHeader>
         <CardTitle> Enter Route Details</CardTitle>
       </CardHeader>

@@ -20,68 +20,68 @@ import {
 } from 'recharts';
 
 // NEW: A single doodle component to render different SVG shapes
-const Doodle = ({ type, color, size }) => {
-  const commonProps = {
-    stroke: color,
-    strokeWidth: "2",
-    fill: "none",
-    strokeLinecap: "round",
-    strokeLinejoin: "round",
-    width: size,
-    height: size,
-  };
+// const Doodle = ({ type, color, size }) => {
+//   const commonProps = {
+//     stroke: color,
+//     strokeWidth: "2",
+//     fill: "none",
+//     strokeLinecap: "round",
+//     strokeLinejoin: "round",
+//     width: size,
+//     height: size,
+//   };
 
-  switch (type) {
-    case 'squiggle':
-      return <svg {...commonProps} viewBox="0 0 24 24"><path d="M21 12a9 9 0 0 1-9-9 9 9 0 0 0-9 9 9 9 0 0 1 9 9 9 9 0 0 0 9-9z"></path></svg>;
-    case 'plus':
-      return <svg {...commonProps} viewBox="0 0 24 24"><path d="M12 5v14m-7-7h14"></path></svg>;
-    case 'circle-z':
-        return <svg {...commonProps} viewBox="0 0 24 24"><path d="M10 8h4l-4 8h4m4-12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"></path></svg>;
-    case 'triangle':
-        return <svg {...commonProps} viewBox="0 0 24 24"><path d="M12 2 2 22h20L12 2z"></path></svg>;
-    default:
-      return null;
-  }
-};
+//   switch (type) {
+//     case 'squiggle':
+//       return <svg {...commonProps} viewBox="0 0 24 24"><path d="M21 12a9 9 0 0 1-9-9 9 9 0 0 0-9 9 9 9 0 0 1 9 9 9 9 0 0 0 9-9z"></path></svg>;
+//     case 'plus':
+//       return <svg {...commonProps} viewBox="0 0 24 24"><path d="M12 5v14m-7-7h14"></path></svg>;
+//     case 'circle-z':
+//         return <svg {...commonProps} viewBox="0 0 24 24"><path d="M10 8h4l-4 8h4m4-12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"></path></svg>;
+//     case 'triangle':
+//         return <svg {...commonProps} viewBox="0 0 24 24"><path d="M12 2 2 22h20L12 2z"></path></svg>;
+//     default:
+//       return null;
+//   }
+// };
 
 // NEW: Component for the background doodles
-const DoodleBackground = () => {
-  const [doodles, setDoodles] = useState([]);
-  const doodleTypes = ['squiggle', 'plus', 'circle-z', 'triangle'];
-  const doodleColors = ['#00bcd4', '#4dd0e1', '#26c6da', '#80deea']; // Shades of cyan
+// const DoodleBackground = () => {
+//   const [doodles, setDoodles] = useState([]);
+//   const doodleTypes = ['squiggle', 'plus', 'circle-z', 'triangle'];
+//   const doodleColors = ['#00bcd4', '#4dd0e1', '#26c6da', '#80deea']; // Shades of cyan
 
-  useEffect(() => {
-    const generatedDoodles = Array.from({ length: 20 }).map((_, i) => ({
-      id: i,
-      type: doodleTypes[Math.floor(Math.random() * doodleTypes.length)],
-      color: doodleColors[Math.floor(Math.random() * doodleColors.length)],
-      top: `${Math.random() * 100}%`,
-      left: `${Math.random() * 100}%`,
-      rotate: `${Math.random() * 360}deg`,
-      size: Math.floor(Math.random() * 30) + 20, // size between 20 and 50px
-    }));
-    setDoodles(generatedDoodles);
-  }, []); // Empty dependency array ensures this runs only once on mount
+//   useEffect(() => {
+//     const generatedDoodles = Array.from({ length: 20 }).map((_, i) => ({
+//       id: i,
+//       type: doodleTypes[Math.floor(Math.random() * doodleTypes.length)],
+//       color: doodleColors[Math.floor(Math.random() * doodleColors.length)],
+//       top: `${Math.random() * 100}%`,
+//       left: `${Math.random() * 100}%`,
+//       rotate: `${Math.random() * 360}deg`,
+//       size: Math.floor(Math.random() * 30) + 20, // size between 20 and 50px
+//     }));
+//     setDoodles(generatedDoodles);
+//   }, []); // Empty dependency array ensures this runs only once on mount
 
-  return (
-    <div className="absolute inset-0 z-0 overflow-hidden opacity-10">
-      {doodles.map(doodle => (
-        <div
-          key={doodle.id}
-          className="absolute"
-          style={{
-            top: doodle.top,
-            left: doodle.left,
-            transform: `rotate(${doodle.rotate}) translate(-50%, -50%)`,
-          }}
-        >
-          <Doodle type={doodle.type} color={doodle.color} size={doodle.size} />
-        </div>
-      ))}
-    </div>
-  );
-};
+//   return (
+//     <div className="absolute inset-0 z-0 overflow-hidden opacity-10">
+//       {doodles.map(doodle => (
+//         <div
+//           key={doodle.id}
+//           className="absolute"
+//           style={{
+//             top: doodle.top,
+//             left: doodle.left,
+//             transform: `rotate(${doodle.rotate}) translate(-50%, -50%)`,
+//           }}
+//         >
+//           <Doodle type={doodle.type} color={doodle.color} size={doodle.size} />
+//         </div>
+//       ))}
+//     </div>
+//   );
+// };
 
 
 // Forecast Dashboard
@@ -312,10 +312,10 @@ const WarehouseSetupPage = () => {
     <>
       <SleekNavbar />
       {/* MODIFIED: Added `relative` and `overflow-hidden` to the main container. */}
-      <div className="min-h-screen bg-[#101010] text-[#DDDBCB] font-sans flex flex-col items-center justify-center p-4 pt-24 md:pt-16 relative overflow-hidden">
+      <div className="min-h-screen bg-[#101010] text-[#DDDBCB] font-sans flex flex-col items-center justify-center p-4 pt-24 md:pt-16 relative overflow-hidden pb-20">
         
         {/* MODIFIED: Added the doodle background component here. */}
-        <DoodleBackground />
+        {/* <DoodleBackground /> */}
 
         {/* MODIFIED: Wrapped content in a div with relative positioning and a higher z-index to place it above the doodles. */}
         <div className="relative z-10 flex flex-col items-center w-full">

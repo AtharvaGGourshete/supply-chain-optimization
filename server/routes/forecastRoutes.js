@@ -1,9 +1,14 @@
 import { Router } from 'express';
 import multer from 'multer';
-import { processForecast } from '../controllers/forecastController.js';
+import { processProductForecast, processAggregateForecast } from '../controllers/forecastController.js';
 
 const router = Router();
 const upload = multer({ dest: 'uploads/' });
 
-router.post('/forecast', upload.single('file'), processForecast); // The upload.single('file') middleware handles the file upload
+// Route for single-product forecasting and optimization
+router.post('/forecast-and-optimize-product', upload.single('file'), processProductForecast);
+
+// Route for aggregate business forecasting
+router.post('/forecast-aggregate-data', upload.single('file'), processAggregateForecast);
+
 export default router;

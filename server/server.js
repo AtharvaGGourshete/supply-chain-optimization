@@ -32,8 +32,10 @@ dotenv.config();
 
 // Routes
 app.use("/", authRoutes);
-// Register the forecast routes
-app.use('/api', forecastRoutes);
+
+// Forecasting and Optimization routes
+app.use("/api", forecastRoutes); // Handles aggregate and single-product forecasts
+
 // Optimize routes
 app.use('/api', optimizeRouter);
 

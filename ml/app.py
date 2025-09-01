@@ -1,107 +1,169 @@
-from flask import Flask, request, jsonify
-from flask_cors import CORS
-import pandas as pd
-import joblib
+import os
 import logging
-import traceback
-import io
+import joblib
+import pandas as pd
+from flask import Flask, request, jsonify
+from prophet import Prophet
+from scipy.stats import norm
+import numpy as np
 
-# Setup logging
-logging.basicConfig(level=logging.INFO)
-
-# Initialize the Flask app and enable CORS
+# Setup Flask app
 app = Flask(__name__)
-CORS(app)
 
-# Define the paths for the pre-trained models
-MODELS = {
-    "sales": 'sales_model.pkl',
-    "quantity": 'quantity_model.pkl',
-    "deliveries": 'deliveries_model.pkl'
+# Setup logger
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Paths to pretrained Prophet models (PKL format)
+MODEL_PATHS = {
+    "sales": "models/sales_model.pkl",
+    "quantity": "models/quantity_model.pkl",
+    "deliveries": "models/deliveries_model.pkl"
 }
 
-# Dictionary to hold the loaded models
-loaded_models = {}
-
-# Load all pre-trained models when the app starts.
-for name, file_path in MODELS.items():
+# Load pretrained models into memory
+PRETRAINED_MODELS = {}
+for name, path in MODEL_PATHS.items():
     try:
-        logging.info(f"Loading pre-trained model for {name} from {file_path}...")
-        loaded_models[name] = joblib.load(file_path)
-        logging.info(f"Model for {name} loaded successfully.")
-    except FileNotFoundError:
-        logging.error(f"Model file '{file_path}' not found. Skipping.")
-        loaded_models[name] = None
+        PRETRAINED_MODELS[name] = joblib.load(path)
+        logger.info(f"Loaded pretrained model for {name}")
     except Exception as e:
-        logging.error(f"Error loading model for {name}: {e}")
-        loaded_models[name] = None
+        logger.error(f"Could not load model {name}: {e}")
+        PRETRAINED_MODELS[name] = None
 
-@app.route('/upload-and-forecast-all', methods=['POST'])
-def upload_and_forecast_all():
-    """
-    API endpoint to accept a file upload and make forecasts for sales,
-    order quantity, and deliveries.
-    """
-    # Check if all models were loaded successfully
-    if not all(loaded_models.values()):
-        return jsonify({"error": "One or more pre-trained models are not available."}), 503
 
+def clone_model(template_model: Prophet) -> Prophet:
+    """Rebuild a fresh Prophet instance from a pretrained (pickled) one."""
+    if template_model is None:
+        return Prophet()
+
+    config = {
+        "growth": template_model.growth,
+        "changepoints": None,
+        "n_changepoints": template_model.n_changepoints,
+        "changepoint_range": template_model.changepoint_range,
+        "yearly_seasonality": template_model.yearly_seasonality,
+        "weekly_seasonality": template_model.weekly_seasonality,
+        "daily_seasonality": template_model.daily_seasonality,
+        "seasonality_mode": template_model.seasonality_mode,
+        "seasonality_prior_scale": template_model.seasonality_prior_scale,
+        "holidays_prior_scale": template_model.holidays_prior_scale,
+        "changepoint_prior_scale": template_model.changepoint_prior_scale,
+    }
+    new_model = Prophet(**config)
+
+    # Copy seasonalities
+    for name, props in template_model.seasonalities.items():
+        if name not in new_model.seasonalities:
+            new_model.add_seasonality(
+                name=name,
+                period=props["period"],
+                fourier_order=props["fourier_order"],
+                prior_scale=props["prior_scale"]
+            )
+
+    # Copy holidays
+    if template_model.holidays is not None:
+        new_model.holidays = template_model.holidays.copy()
+
+    return new_model
+
+
+@app.route("/forecast-and-optimize-product", methods=["POST"])
+def forecast_and_optimize_product():
     try:
-        # Check for file upload
-        if 'file' not in request.files:
-            return jsonify({"error": "No file part in the request"}), 400
+        file = request.files["file"]
+        metric_name = request.form.get("metric_name", "sales")
+        service_level = float(request.form.get("service_level", 0.95))
+        lead_time_days = int(request.form.get("lead_time_days", 7))
+        current_inventory = int(request.form.get("current_inventory", 0))
 
-        file = request.files['file']
-        if file.filename == '':
-            return jsonify({"error": "No selected file"}), 400
-        
-        file_stream = io.BytesIO(file.read())
+        df = pd.read_csv(file)
+        df["ds"] = pd.to_datetime(df["ds"])
 
-        # Read the file based on its extension
-        if file.filename.endswith('.csv'):
-            df = pd.read_csv(file_stream)
-        elif file.filename.endswith(('.xls', '.xlsx')):
-            df = pd.read_excel(file_stream)
-        else:
-            return jsonify({"error": "Unsupported file type. Please upload a CSV or Excel file."}), 400
-        
-        # Data validation to ensure the required columns are present
-        required_cols = ['ds', 'y_sales', 'y_quantity', 'y_deliveries']
-        if not all(col in df.columns for col in required_cols):
-            return jsonify({"error": f"Input data must contain all required columns: {', '.join(required_cols)}"}), 400
+        results = {}
+        for metric in ["sales", "quantity", "deliveries"]:
+            col = f"y_{metric}"
+            if col not in df.columns:
+                continue
+            df_metric = df[["ds", col]].rename(columns={col: "y"})
+            model = clone_model(PRETRAINED_MODELS.get(metric))
+            model.fit(df_metric)
+            future = model.make_future_dataframe(periods=30)
+            forecast = model.predict(future)
+            forecast_df = forecast.tail(30)[["ds", "yhat", "yhat_lower", "yhat_upper"]]
+            forecast_df["ds"] = forecast_df["ds"].dt.strftime("%Y-%m-%d")
+            results[metric] = {"forecast": forecast_df.to_dict(orient="records")}
 
-        # Convert 'ds' column to datetime
-        df['ds'] = pd.to_datetime(df['ds'])
+        if metric_name not in results:
+            return jsonify({
+                "error": f"Metric '{metric_name}' not found or no data for it."
+            }), 400
 
-        # Create a combined results dictionary
-        all_forecasts = {}
+        forecast_optimized = results[metric_name]["forecast"]
+        yhat_values = [f["yhat"] for f in forecast_optimized]
+        avg_daily_demand = np.mean(yhat_values)
+        ci_width = [f["yhat_upper"] - f["yhat_lower"] for f in forecast_optimized]
+        std_dev_daily = np.mean(ci_width) / (2 * 1.96)  # Approximate std from 95% CI
+        z = norm.ppf(service_level)
+        std_dev_lead = std_dev_daily * np.sqrt(lead_time_days)
+        safety_stock = z * std_dev_lead
+        reorder_point = avg_daily_demand * lead_time_days + safety_stock
+        forecasted_demand = avg_daily_demand * 30
+        optimal_replenishment_quantity = max(0, forecasted_demand + safety_stock - current_inventory)
 
-        # Loop through each model and make a prediction
-        for metric, model in loaded_models.items():
-            if model:
-                # Prepare the future dataframe for prediction
-                future = model.make_future_dataframe(periods=30, include_history=False)
+        results[metric_name].update({
+            "forecasted_demand": forecasted_demand,
+            "safety_stock": safety_stock,
+            "reorder_point": reorder_point,
+            "optimal_replenishment_quantity": optimal_replenishment_quantity,
+            "metric": metric_name
+        })
 
-                # Make the forecast
-                forecast = model.predict(future)
-
-                # Extract and format the forecast results
-                forecast_results = forecast[['ds', 'yhat', 'yhat_lower', 'yhat_upper']].to_dict('records')
-                
-                # Convert datestamps to strings for JSON serialization
-                for item in forecast_results:
-                    item['ds'] = item['ds'].strftime('%Y-%m-%d')
-
-                all_forecasts[metric] = forecast_results
-            
-        logging.info("All forecasts generated successfully.")
-        return jsonify(all_forecasts), 200
-
+        return jsonify(results)
     except Exception as e:
-        logging.error(f"An error occurred: {e}")
-        logging.error(traceback.format_exc())
-        return jsonify({"error": "An internal server error occurred."}), 500
+        logger.error(f"Error in forecast-and-optimize-product: {e}")
+        return jsonify({"error": str(e)}), 500
 
-if __name__ == '__main__':
-    # Run the Flask app
-    app.run(host='0.0.0.0', port=5000, debug=True)
+@app.route("/forecast-aggregate-data", methods=["POST"])
+def forecast_aggregate_data():
+    try:
+        file = request.files["file"]
+        df = pd.read_csv(file)
+        df["ds"] = pd.to_datetime(df["ds"])
+
+        results = {}
+        for metric in ["sales", "revenue"]:
+            col = f"y_{metric}"
+            if col not in df.columns:
+                logger.warning(f"Skipping {metric}, not found in CSV.")
+                continue
+
+            df_metric = df[["ds", col]].rename(columns={col: "y"})
+
+            model = Prophet()  # Default for revenue
+            if metric == "sales":
+                model = clone_model(PRETRAINED_MODELS.get("sales"))
+
+            model.fit(df_metric)
+            future = model.make_future_dataframe(periods=90)  # Enough for quarterly
+            forecast = model.predict(future).tail(90)
+            forecast["ds"] = pd.to_datetime(forecast["ds"])
+            forecast.set_index("ds", inplace=True)
+
+            if metric == "sales":
+                monthly = forecast.resample("M")["yhat"].sum().reset_index()
+                monthly["ds"] = monthly["ds"].dt.to_period("M").astype(str)
+                results["monthly_sales"] = monthly.to_dict(orient="records")
+            elif metric == "revenue":
+                quarterly = forecast.resample("Q")["yhat"].sum().reset_index()
+                quarterly["ds"] = quarterly["ds"].dt.to_period("Q").astype(str)
+                results["quarterly_revenue"] = quarterly.to_dict(orient="records")
+
+        return jsonify(results)
+    except Exception as e:
+        logger.error(f"Error in forecast-aggregate-data: {e}")
+        return jsonify({"error": str(e)}), 500
+
+if __name__ == "__main__":
+    app.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))

@@ -1,45 +1,73 @@
 import axios from 'axios';
 import fs from 'fs';
-import FormData from 'form-data'; // For Node.js environments
+import FormData from 'form-data';
+import { promisify } from 'util';
 
-// Flask API URL
-const FLASK_API_URL = 'http://127.0.0.1:5000/upload-and-forecast-all';
+const unlinkAsync = promisify(fs.unlink);
 
-export const processForecast = async (req, res) => {
-    // Check if a file was uploaded.
+// Flask API URLs
+const FLASK_API_URL_PRODUCT = 'http://127.0.0.1:5000/forecast-and-optimize-product';
+const FLASK_API_URL_AGGREGATE = 'http://127.0.0.1:5000/forecast-aggregate-data';
+
+export const processProductForecast = async (req, res) => {
     if (!req.file) {
         return res.status(400).json({ error: 'No file uploaded.' });
     }
 
     try {
-        // Prepare the form data to be sent to the Flask API.
         const formData = new FormData();
-        // Use fs.createReadStream to send the file.
         formData.append('file', fs.createReadStream(req.file.path), req.file.originalname);
-        
-        // Log the request to Flask for debugging.
-        console.log(`Forwarding file to Flask API at ${FLASK_API_URL}`);
 
-        // Forward the file to the Flask API using Axios.
-        const flaskResponse = await axios.post(FLASK_API_URL, formData, {
+        // Append additional optimization parameters from the request body
+        for (const key in req.body) {
+            formData.append(key, req.body[key]);
+        }
+
+        console.log(`Forwarding file to Flask API for single product at ${FLASK_API_URL_PRODUCT}`);
+
+        const flaskResponse = await axios.post(FLASK_API_URL_PRODUCT, formData, {
             headers: {
                 ...formData.getHeaders()
             }
         });
 
-        // Delete the temporary file after processing.
-        fs.unlinkSync(req.file.path);
-
-        // Send the JSON response from Flask back to the React client.
+        await unlinkAsync(req.file.path);
         res.status(200).json(flaskResponse.data);
 
     } catch (error) {
         console.error('Error forwarding file to Flask:', error.response?.data || error.message);
-        // Delete the temporary file if an error occurred.
         if (req.file && fs.existsSync(req.file.path)) {
-            fs.unlinkSync(req.file.path);
+            await unlinkAsync(req.file.path);
         }
         res.status(500).json({ error: 'Failed to process forecast request.' });
     }
 };
 
+export const processAggregateForecast = async (req, res) => {
+    if (!req.file) {
+        return res.status(400).json({ error: 'No file uploaded.' });
+    }
+
+    try {
+        const formData = new FormData();
+        formData.append('file', fs.createReadStream(req.file.path), req.file.originalname);
+
+        console.log(`Forwarding file to Flask API for aggregate data at ${FLASK_API_URL_AGGREGATE}`);
+
+        const flaskResponse = await axios.post(FLASK_API_URL_AGGREGATE, formData, {
+            headers: {
+                ...formData.getHeaders()
+            }
+        });
+
+        await unlinkAsync(req.file.path);
+        res.status(200).json(flaskResponse.data);
+
+    } catch (error) {
+        console.error('Error forwarding file to Flask:', error.response?.data || error.message);
+        if (req.file && fs.existsSync(req.file.path)) {
+            await unlinkAsync(req.file.path);
+        }
+        res.status(500).json({ error: 'Failed to process aggregate forecast request.' });
+    }
+};

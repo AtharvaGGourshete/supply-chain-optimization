@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Glow = ({ variant = 'top', intensity = 'high', color = 'golden1' }) => {
+const Glow = ({ variant = 'top', intensity = 'high', color = 'golden2' }) => {
 
   const getGlowStyles = () => {
     const baseStyles = "absolute pointer-events-none";

@@ -4,6 +4,7 @@ import cors from 'cors';
 import authRoutes from "./routes/auth.js";
 import forecastRoutes from "./routes/forecastRoutes.js"
 import optimizeRouter from "./routes/optimize.js"
+import userRoute from "./routes/user.js";
 import dotenv from 'dotenv';
 
 const app = express();
@@ -38,6 +39,7 @@ app.use("/api", forecastRoutes); // Handles aggregate and single-product forecas
 
 // Optimize routes
 app.use('/api', optimizeRouter);
+app.use("/api", userRoute);
 
 app.listen(PORT, () => {
   console.log(`Server is running on PORT ${PORT}`);

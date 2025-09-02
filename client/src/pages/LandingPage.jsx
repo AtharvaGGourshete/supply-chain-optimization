@@ -208,7 +208,7 @@ const LandingPage = () => {
                   speed={120}
                   direction="left"
                   logoHeight={78}
-                  gap={40}
+                  gap={50}
                   pauseOnHover
                   scaleOnHover
                   fadeOut

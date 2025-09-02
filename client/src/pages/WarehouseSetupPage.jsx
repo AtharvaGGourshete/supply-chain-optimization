@@ -126,14 +126,14 @@ const SingleProductDashboard = ({ forecastData, optimizationMetrics, onReset }) 
   return (
     <div className="space-y-8">
       <div className="text-center">
-        <h2 className="text-4xl font-bold text-cyan-400">Inventory Optimization</h2>
+        <h2 className="text-4xl font-bold text-yellow-400">Inventory Optimization</h2>
         <p className="mt-2 text-lg text-gray-300">Here are your recommendations based on your data.</p>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-center">
         <Card className={cardStyles}>
           <CardHeader>
             <div className="text-gray-400">Forecasted Demand</div>
-            <h2 className="text-4xl font-bold text-cyan-400 mt-2">{Math.round(optimizationMetrics.forecasted_demand || 0).toLocaleString()}</h2>
+            <h2 className="text-4xl font-bold text-yellow-400 mt-2">{Math.round(optimizationMetrics.forecasted_demand || 0).toLocaleString()}</h2>
           </CardHeader>
         </Card>
         <Card className={cardStyles}>
@@ -197,7 +197,7 @@ const AggregateDashboard = ({ aggregateData, onReset }) => {
   return (
     <div className="space-y-8">
       <div className="text-center">
-        <h2 className="text-4xl font-bold text-cyan-400">Business Forecasts</h2>
+        <h2 className="text-4xl font-bold text-yellow-400">Business Forecasts</h2>
         <p className="mt-2 text-lg text-gray-300">Here are your high-level business predictions.</p>
       </div>
       <section className="mt-8">
@@ -223,7 +223,7 @@ const Stepper = ({ currentStep, steps }) => (
           <div className="flex flex-col items-center">
             <div
               className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg transition-all duration-300 ${
-                isCompleted ? 'bg-cyan-500 text-black' : isCurrent ? 'bg-cyan-600 border-2 border-cyan-400 text-white' : 'bg-gray-700 text-gray-400'
+                isCompleted ? 'bg-yellow-500 text-black' : isCurrent ? 'bg-yellow-600 border-2 border-yellow-400 text-white' : 'bg-gray-700 text-gray-400'
               }`}
             >
               {isCompleted ? '✓' : stepNumber}
@@ -231,7 +231,7 @@ const Stepper = ({ currentStep, steps }) => (
             <p className={`mt-2 text-xs font-semibold transition-all duration-300 ${isCurrent || isCompleted ? 'text-white' : 'text-gray-400'}`}>{step}</p>
           </div>
           {stepNumber < steps.length && (
-            <div className={`flex-1 h-1 mx-2 transition-all duration-300 ${isCompleted ? 'bg-cyan-500' : 'bg-gray-700'}`}></div>
+            <div className={`flex-1 h-1 mx-2 transition-all duration-300 ${isCompleted ? 'bg-yellow-200' : 'bg-gray-700'}`}></div>
           )}
         </React.Fragment>
       );
@@ -401,8 +401,8 @@ const WarehouseSetupPage = () => {
                 <p className="text-gray-400 mt-1">What kind of forecast do you want to run?</p>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-                <Button size="lg" className="h-40 bg-cyan-600 hover:bg-cyan-700 font-semibold text-lg" onClick={() => setFormData(prev => ({ ...prev, analysisType: 'single' }))}>Single Product Optimization</Button>
-                <Button size="lg" className="h-40 bg-cyan-600 hover:bg-cyan-700 font-semibold text-lg" onClick={() => setFormData(prev => ({ ...prev, analysisType: 'aggregate' }))}>Aggregate Business Forecast</Button>
+                <Button size="lg" className="h-40 bg-yellow-600 hover:bg-yellow-700 cursor-pointer font-semibold text-lg" onClick={() => setFormData(prev => ({ ...prev, analysisType: 'single' }))}>Single Product Optimization</Button>
+                <Button size="lg" className="h-40 bg-yellow-600 hover:bg-yellow-700 cursor-pointer font-semibold text-lg" onClick={() => setFormData(prev => ({ ...prev, analysisType: 'aggregate' }))}>Aggregate Business Forecast</Button>
               </div>
             </div>
           );
@@ -424,7 +424,7 @@ const WarehouseSetupPage = () => {
           return (
             <div className="space-y-6">
               <div className="text-center"><h3 className="text-3xl text-[#DDDBCB] font-bold">Aggregate Business Forecast</h3><p className="text-gray-400 mt-1">Provide high-level data to forecast total monthly sales and quarterly revenue.</p></div>
-              <div className="flex flex-col items-center justify-center p-12 mt-4 border-2 border-dashed border-white/20 rounded-lg hover:border-cyan-500 hover:bg-black/20 transition-all duration-300">
+              <div className="flex flex-col items-center justify-center p-12 mt-4 border-2 border-dashed border-white/20 rounded-lg hover:border-yellow-500 hover:bg-black/20 transition-all duration-300">
                 <Upload className="w-16 h-16 text-gray-500"/>
                 <p className="mt-4 text-xl font-semibold">Drag & drop your file here</p>
                 <p className="text-gray-400">or</p>
@@ -432,7 +432,7 @@ const WarehouseSetupPage = () => {
                   <span className="cursor-pointer">Choose a file</span>
                   <input type="file" onChange={handleFileChange} accept=".csv, .xlsx, .xls" className="absolute inset-0 opacity-0 cursor-pointer" />
                 </div>
-                {formData.salesCsv && <p className="mt-2 text-cyan-400">{formData.salesCsv.name}</p>}
+                {formData.salesCsv && <p className="mt-2 text-yellow-400">{formData.salesCsv.name}</p>}
               </div>
               <p className="text-center text-sm text-gray-400">Ensure the file has columns for: <strong className="text-white/80">ds</strong>, <strong className="text-white/80">y_sales</strong>, and <strong className="text-white/80">y_revenue</strong>.</p>
             </div>
@@ -442,8 +442,8 @@ const WarehouseSetupPage = () => {
         if (loading) {
           return (
             <div className="flex flex-col items-center justify-center w-full min-h-[45vh]">
-              <div className="animate-spin h-12 w-12 border-4 border-cyan-400 border-t-transparent rounded-full"></div>
-              <p className="mt-4 text-cyan-300 font-medium text-lg">Running analysis...</p>
+              <div className="animate-spin h-12 w-12 border-4 border-yellow-400 border-t-transparent rounded-full"></div>
+              <p className="mt-4 text-yellow-300 font-medium text-lg">Running analysis...</p>
             </div>
           );
         } else if (error) {
@@ -479,19 +479,19 @@ const WarehouseSetupPage = () => {
             {step < 4 && (
               <CardFooter className="flex justify-between p-8 bg-black/20 rounded-b-2xl">
                 {step > 1 ? (
-                  <Button size="lg" variant="outline" className="cursor-pointer bg-neutral-800 hover:bg-neutral-700" onClick={() => {
+                  <Button size="lg" variant="outline" className="cursor-pointer bg-yellow-600 hover:bg-yellow-700 text-white hover:text-white border-none" onClick={() => {
                     if (step === 3 && formData.analysisType) {
                       setFormData(prev => ({ ...prev, analysisType: null }));
                     } else {
                       setStep(step - 1);
                     }
                   }}>
-                    <ArrowLeft className="mr-2 h-5 w-5"/>
+                    <ArrowLeft className=" mr-2 h-5 w-5"/>
                     Previous
                   </Button>
                 ) : <div />}
                 {step < 3 || (step === 3 && formData.analysisType) ? (
-                  <Button size="lg" className="bg-cyan-600 hover:bg-cyan-700 cursor-pointer" onClick={() => {
+                  <Button size="lg" className="bg-yellow-600 hover:bg-yellow-700 cursor-pointer" onClick={() => {
                     if (step === 3) handleForecast();
                     else setStep(step + 1);
                   }} disabled={loading || (step === 3 && !formData.salesCsv)}>

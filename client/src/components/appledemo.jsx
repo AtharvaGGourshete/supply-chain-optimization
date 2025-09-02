@@ -40,7 +40,7 @@ export function AppleCardsCarouselDemo() {
       </div>
 
       {/* Enhanced Carousel Container */}
-      <div className="relative z-10">
+       <div className="relative z-10 carousel-fade-container">
         <Carousel 
           items={cards} 
           className="w-full"
@@ -149,25 +149,25 @@ const data = [
   {
     category: "Supply Chain",
     title: "Real-time Inventory Management",
-    src: "https://images.unsplash.com/photo-1586297135537-94bc9ba060aa?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    src: "/logo3.png",
     content: <DummyContent />,
   },
   {
     category: "Warehouse",
     title: "Automated Warehouse Operations",
-    src: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    src: "/logo4.png",
     content: <DummyContent />,
   },
   {
     category: "Performance",
     title: "Advanced Analytics Dashboard",
-    src: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=3426&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    src: "/logo5.png",
     content: <DummyContent />,
   },
   {
     category: "Integration",
     title: "Seamless Platform Integration",
-    src: "https://images.unsplash.com/photo-1518186233392-c232efbf2373?q=80&w=3474&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    src: "/logo6.png",
     content: <DummyContent />,
   },
 ];

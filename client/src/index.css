@@ -317,3 +317,158 @@ button:focus-visible {
     }
   }
 }
+
+
+@theme {
+  /* Font Family Configuration */
+  --font-clash: "Clash Display", "sans-serif";
+  --font-panchang: "Panchang", "sans-serif";
+  --font-nippo: "Nippo", "sans-serif";
+  --font-britney: "Britney", "cursive";
+  --font-comico: "Comico", "cursive";
+  --font-zina: "Zina", "sans-serif";
+  --font-anton: "Anton", "serif";
+  
+  /* You can also add other customizations here */
+  --color-primary: #3b82f6;
+  --color-secondary: #8b5cf6;
+}
+
+
+
+/* .carousel-fade-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.carousel-fade-container::before,
+.carousel-fade-container::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50px; 
+  pointer-events: none;
+  z-index: 20;
+  border-radius: 30px; 
+}
+
+.carousel-fade-container::before {
+  left: -25px;
+  background: radial-gradient(ellipse 150px 100% at left, 
+    #101010 0%, 
+    #101010 20%, 
+    rgba(16, 16, 16, 0.8) 40%,
+    rgba(16, 16, 16, 0.4) 70%, 
+    transparent 100%
+  );
+  mask: linear-gradient(to right, black 0%, black 60%, transparent 100%);
+}
+
+.carousel-fade-container::after {
+  right: -25px; 
+  background: radial-gradient(ellipse 150px 100% at right, 
+    #101010 0%, 
+    #101010 20%, 
+    rgba(16, 16, 16, 0.8) 40%,
+    rgba(16, 16, 16, 0.4) 70%, 
+    transparent 100%
+  );
+  mask: linear-gradient(to left, black 0%, black 60%, transparent 100%);
+}
+
+@media (min-width: 640px) {
+  .carousel-fade-container::before,
+  .carousel-fade-container::after {
+    width: 200px;
+    border-radius: 40px;
+  }
+  
+  .carousel-fade-container::before {
+    left: -35px;
+    background: radial-gradient(ellipse 200px 100% at left, 
+      #101010 0%, 
+      #101010 20%, 
+      rgba(16, 16, 16, 0.8) 40%,
+      rgba(16, 16, 16, 0.4) 70%, 
+      transparent 100%
+    );
+  }
+  
+  .carousel-fade-container::after {
+    right: -35px;
+    background: radial-gradient(ellipse 200px 100% at right, 
+      #101010 0%, 
+      #101010 20%, 
+      rgba(16, 16, 16, 0.8) 40%,
+      rgba(16, 16, 16, 0.4) 70%, 
+      transparent 100%
+    );
+  }
+}
+
+
+@media (min-width: 1024px) {
+  .carousel-fade-container::before,
+  .carousel-fade-container::after {
+    width: 150px;
+    border-radius: 50px;
+  }
+
+  .carousel-fade-container::before {
+    left: -50px;
+    background: radial-gradient(ellipse 300px 100% at left, 
+      #101010 0%, 
+      #101010 20%, 
+      rgba(16, 16, 16, 0.8) 40%,
+      rgba(16, 16, 16, 0.4) 70%, 
+      transparent 100%
+    );
+  }
+
+  .carousel-fade-container::after {
+    right: -50px;
+    background: radial-gradient(ellipse 300px 100% at right, 
+      #101010 0%, 
+      #101010 20%, 
+      rgba(16, 16, 16, 0.8) 40%,
+      rgba(16, 16, 16, 0.4) 70%, 
+      transparent 100%
+    );
+  }
+}
+
+
+@media (min-width: 1280px) {
+  .carousel-fade-container::before,
+  .carousel-fade-container::after {
+    width:100px;
+    border-radius: 60px;
+    -webkit-border-radius: 60px;
+    -moz-border-radius: 60px;
+    -ms-border-radius: 60px;
+    -o-border-radius: 60px;
+}
+
+  .carousel-fade-container::before {
+    left: -60px;
+    background: radial-gradient(ellipse 350px 100% at left, 
+      #101010 0%, 
+      #101010 20%, 
+      rgba(16, 16, 16, 0.8) 40%,
+      rgba(16, 16, 16, 0.4) 70%, 
+      transparent 100%
+    );
+  }
+
+  .carousel-fade-container::after {
+    right: -60px;
+    background: radial-gradient(ellipse 350px 100% at right, 
+      #101010 0%, 
+      #101010 20%, 
+      rgba(16, 16, 16, 0.8) 40%,
+      rgba(16, 16, 16, 0.4) 70%, 
+      transparent 100%
+    );
+  }
+} */

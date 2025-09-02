@@ -136,13 +136,11 @@ const LandingPage = () => {
       <Navbar />
       <main className="bg-[#101010] text-[#DDDBCB] font-poppins">
         <section className="relative min-h-screen flex items-center justify-center py-20 bg-[#101010] overflow-hidden">
-
           <div className="absolute inset-0 z-0 w-full h-full pointer-events-none">
-            <Glow variant="top" intensity="high"/>
+            <Glow variant="top" intensity="high" />
           </div>
           <div className="relative z-20 container mx-auto px-4 mt-28 w-full">
             <div className="flex flex-col items-center text-center max-w-4xl mx-auto space-y-8">
-
               <h1 className="text-6xl md:text-8xl font-bold leading-tight text-white tracking-tight relative inline-block">
                 CHAINSAW
                 <div className="mx-auto h-0.5 bg-gradient-to-r from-transparent via-[#DDDBCB]/30 to-transparent group-hover:via-[#DDDBCB]/60 transition-all duration-500" />
@@ -173,7 +171,6 @@ const LandingPage = () => {
               </div>
             </div>
 
-
             <div className="flex items-center justify-center p-8 mt-20">
               <div
                 style={{
@@ -185,32 +182,55 @@ const LandingPage = () => {
                 <LogoLoop
                   logos={[
                     {
-                      node: <SiReact />,
+                      node: (
+                        <div className="bg-transparent font-anton backdrop-blur-3xl rounded-lg px-4 py-6 shadow-sm hover:shadow-md transition-all duration-300">
+                          <span className="text-white font-medium whitespace-nowrap">
+                            Route Optimization
+                          </span>
+                        </div>
+                      ),
                       title: "React",
-                      href: "https://react.dev",
+                      href: "/optimize-routes",
                     },
                     {
-                      node: <SiNextdotjs />,
+                      node: (
+                        <div className="bg-transparent  font-clash  backdrop-blur-3xl rounded-lg px-4 py-6 shadow-sm hover:shadow-md transition-all duration-300">
+                          <span className="text-white font-medium whitespace-nowrap">
+                            Supplier Selection & Scoring
+                          </span>
+                        </div>
+                      ),
                       title: "Next.js",
-                      href: "https://nextjs.org",
+                      href: "/warehouse",
                     },
                     {
-                      node: <SiTypescript />,
+                      node: (
+                        <div className="bg-transparent  font-nippo  backdrop-blur-3xl rounded-lg px-4 py-6 shadow-sm hover:shadow-md transition-all duration-300">
+                          <span className="text-white font-medium whitespace-nowrap">
+                            Demand Forecasting
+                          </span>
+                        </div>
+                      ),
                       title: "TypeScript",
                       href: "https://www.typescriptlang.org",
                     },
                     {
-                      node: <SiTailwindcss />,
+                      node: (
+                        <div className="bg-transparent  font-panchang  backdrop-blur-3xl rounded-lg px-4 py-6 shadow-sm hover:shadow-md transition-all duration-300">
+                          <span className="text-white font-medium whitespace-nowrap">
+                            Inventory Optimization
+                          </span>
+                        </div>
+                      ),
                       title: "Tailwind CSS",
-                      href: "https://tailwindcss.com",
+                      href: "/warehouse",
                     },
                   ]}
                   speed={120}
                   direction="left"
-                  logoHeight={78}
+                  logoHeight={38}
                   gap={50}
                   pauseOnHover
-                  scaleOnHover
                   fadeOut
                   fadeOutColor="#101010"
                   ariaLabel="Technology partners"
@@ -220,9 +240,7 @@ const LandingPage = () => {
           </div>
         </section>
 
-
         <section className="py-24 bg-[#101010] relative overflow-hidden">
-
           <div className="absolute inset-0 opacity-5">
             <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-white to-transparent rounded-full blur-3xl"></div>
             <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-gradient-to-l from-white to-transparent rounded-full blur-3xl"></div>

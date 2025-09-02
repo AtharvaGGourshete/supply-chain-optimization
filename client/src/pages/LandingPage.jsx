@@ -138,7 +138,7 @@ const LandingPage = () => {
         <section className="relative min-h-screen flex items-center justify-center py-20 bg-[#101010] overflow-hidden">
 
           <div className="absolute inset-0 z-0 w-full h-full pointer-events-none">
-            <Glow variant="top" />
+            <Glow variant="top" intensity="high"/>
           </div>
           <div className="relative z-20 container mx-auto px-4 mt-28 w-full">
             <div className="flex flex-col items-center text-center max-w-4xl mx-auto space-y-8">

@@ -130,6 +130,7 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-screen flex bg-[#101010]">
+      
       <div className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8">
         <div className="w-full max-w-md space-y-8">
           {successMessage && <div className="p-3 bg-green-100 border border-green-400 text-green-700 rounded">{successMessage}</div>}
@@ -209,10 +210,6 @@ export default function RegisterPage() {
             </TabsContent>
           </Tabs>
         </div>
-      </div>
-
-      <div className="hidden lg:flex flex-1 relative">
-        <img src="authimage1.png" alt="Authentication illustration" className="w-full h-full object-cover" />
       </div>
     </div>
   );

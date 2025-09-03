@@ -294,8 +294,20 @@ button:focus-visible {
   body {
     @apply bg-background text-foreground;
   }
-}
+  .dark {
+    /* Main background for the app content area */
+    --background: 240 5.9% 7%; /* Equivalent to #121212 */
 
+    /* Sidebar specific variables */
+    --sidebar-background: 240 5.9% 11%; /* Equivalent to #1C1C1C */
+    --sidebar-foreground: 240 4.8% 85%; /* Light gray for text */
+    --sidebar-border: 240 3.7% 20%;     /* For borders inside the sidebar */
+
+    /* Active/hovered sidebar menu item */
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 0 0% 98%;
+  }
+}
 
 *{
   user-select: none;
@@ -318,7 +330,6 @@ button:focus-visible {
   }
 }
 
-
 @theme {
   /* Font Family Configuration */
   --font-clash: "Clash Display", "sans-serif";
@@ -328,13 +339,11 @@ button:focus-visible {
   --font-comico: "Comico", "cursive";
   --font-zina: "Zina", "sans-serif";
   --font-anton: "Anton", "serif";
-  
+
   /* You can also add other customizations here */
   --color-primary: #3b82f6;
   --color-secondary: #8b5cf6;
 }
-
-
 
 /* .carousel-fade-container {
   position: relative;
@@ -383,7 +392,7 @@ button:focus-visible {
     width: 200px;
     border-radius: 40px;
   }
-  
+
   .carousel-fade-container::before {
     left: -35px;
     background: radial-gradient(ellipse 200px 100% at left, 
@@ -394,7 +403,7 @@ button:focus-visible {
       transparent 100%
     );
   }
-  
+
   .carousel-fade-container::after {
     right: -35px;
     background: radial-gradient(ellipse 200px 100% at right, 
@@ -406,7 +415,6 @@ button:focus-visible {
     );
   }
 }
-
 
 @media (min-width: 1024px) {
   .carousel-fade-container::before,
@@ -437,7 +445,6 @@ button:focus-visible {
     );
   }
 }
-
 
 @media (min-width: 1280px) {
   .carousel-fade-container::before,

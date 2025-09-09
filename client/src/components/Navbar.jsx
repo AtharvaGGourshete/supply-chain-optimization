@@ -17,7 +17,7 @@ import {
 import { toast } from "sonner";
 
 const SleekNavbar = () => {
-  const [isDark, setIsDark] = useState(false);
+  //const [isDark, setIsDark] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const { user, isAuthenticated } = useSelector((store) => store.auth);
@@ -36,21 +36,21 @@ const SleekNavbar = () => {
   }, [isSuccess]);
 
   // Dark mode toggle
-  useEffect(() => {
-    if (isDark) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  }, [isDark]);
+  // useEffect(() => {
+  //   if (isDark) {
+  //     document.documentElement.classList.add("dark");
+  //   } else {
+  //     document.documentElement.classList.remove("dark");
+  //   }
+  // }, [isDark]);
 
-  const toggleDarkMode = () => {
-    setIsDark(!isDark);
-  };
+  // const toggleDarkMode = () => {
+  //   setIsDark(!isDark);
+  // };
 
-  const toggleMobileMenu = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen);
-  };
+  // const toggleMobileMenu = () => {
+  //   setIsMobileMenuOpen(!isMobileMenuOpen);
+  // };
 
   return (
     <>

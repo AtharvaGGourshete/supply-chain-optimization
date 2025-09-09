@@ -3,18 +3,21 @@ import logging
 import joblib
 import pandas as pd
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 from prophet import Prophet
 from scipy.stats import norm
 import numpy as np
+import math
 
-# Setup Flask app
+# Initialize Flask app and enable CORS
 app = Flask(__name__)
+CORS(app)
 
-# Setup logger
+# Configure logger
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Paths to pretrained Prophet models (PKL format)
+# Paths to pretrained Prophet models (PKL files)
 MODEL_PATHS = {
     "sales": "models/sales_model.pkl",
     "quantity": "models/quantity_model.pkl",
@@ -25,15 +28,21 @@ MODEL_PATHS = {
 PRETRAINED_MODELS = {}
 for name, path in MODEL_PATHS.items():
     try:
-        PRETRAINED_MODELS[name] = joblib.load(path)
-        logger.info(f"Loaded pretrained model for {name}")
+        if os.path.exists(path):
+            PRETRAINED_MODELS[name] = joblib.load(path)
+            logger.info(f"Loaded pretrained model for {name}")
+        else:
+            logger.warning(f"Model file not found: {path}")
+            PRETRAINED_MODELS[name] = None
     except Exception as e:
         logger.error(f"Could not load model {name}: {e}")
         PRETRAINED_MODELS[name] = None
 
-
 def clone_model(template_model: Prophet) -> Prophet:
-    """Rebuild a fresh Prophet instance from a pretrained (pickled) one."""
+    """
+    Rebuild a fresh Prophet instance from a pretrained (pickled) model.
+    Copies configuration, seasonalities, and holidays.
+    """
     if template_model is None:
         return Prophet()
 
@@ -50,9 +59,9 @@ def clone_model(template_model: Prophet) -> Prophet:
         "holidays_prior_scale": template_model.holidays_prior_scale,
         "changepoint_prior_scale": template_model.changepoint_prior_scale,
     }
+
     new_model = Prophet(**config)
 
-    # Copy seasonalities
     for name, props in template_model.seasonalities.items():
         if name not in new_model.seasonalities:
             new_model.add_seasonality(
@@ -62,107 +71,196 @@ def clone_model(template_model: Prophet) -> Prophet:
                 prior_scale=props["prior_scale"]
             )
 
-    # Copy holidays
     if template_model.holidays is not None:
         new_model.holidays = template_model.holidays.copy()
 
     return new_model
 
+def calculate_eoq(annual_demand: float, ordering_cost: float, holding_cost: float) -> float:
+    """
+    Calculate Economic Order Quantity (EOQ).
+    EOQ = sqrt(2 * D * S / H)
+    where D = annual demand, S = ordering cost, H = holding cost per unit.
+    """
+    if annual_demand <= 0 or holding_cost <= 0:
+        return 0.0
+    return math.sqrt((2 * annual_demand * ordering_cost) / holding_cost)
+
+def abc_analysis(products: list) -> list:
+    """
+    Perform ABC classification on a list of products.
+    Each product dict must include 'annual_demand' and 'unit_cost'.
+    Returns list with 'abc_category' and 'annual_value' added.
+    """
+    for p in products:
+        p['annual_value'] = p['annual_demand'] * p['unit_cost']
+
+    products.sort(key=lambda x: x['annual_value'], reverse=True)
+    total_value = sum(p['annual_value'] for p in products)
+
+    cum = 0.0
+    for p in products:
+        cum += p['annual_value']
+        ratio = cum / total_value if total_value > 0 else 0
+        if ratio <= 0.8:
+            p['abc_category'] = 'A'
+        elif ratio <= 0.95:
+            p['abc_category'] = 'B'
+        else:
+            p['abc_category'] = 'C'
+
+    return products
 
 @app.route("/forecast-and-optimize-product", methods=["POST"])
 def forecast_and_optimize_product():
+    """
+    Endpoint for single-product demand forecasting and inventory optimization.
+    Expects:
+      - CSV file with columns: ds (date), y_sales, y_quantity, y_deliveries
+      - Form data: service_level, lead_time_days, current_inventory,
+                   ordering_cost, holding_cost, unit_cost
+    Returns JSON with:
+      - 30-day forecast for sales, quantity, and deliveries
+      - KPIs: forecasted demand (1 month), safety stock, reorder point,
+              optimal replenishment qty, EOQ, ABC category, etc.
+    """
     try:
         file = request.files["file"]
-        metric_name = request.form.get("metric_name", "sales")
-        service_level = float(request.form.get("service_level", 0.95))
-        lead_time_days = int(request.form.get("lead_time_days", 7))
-        current_inventory = int(request.form.get("current_inventory", 0))
+        SL = float(request.form.get("service_level", 0.95))
+        LT = int(request.form.get("lead_time_days", 7))
+        CI = int(request.form.get("current_inventory", 0))
+        OC = float(request.form.get("ordering_cost", 100))
+        HC = float(request.form.get("holding_cost", 10))
+        UC = float(request.form.get("unit_cost", 50))
 
+        # Read input CSV
         df = pd.read_csv(file)
+        required_cols = ["ds", "y_sales", "y_quantity", "y_deliveries"]
+        if not all(col in df.columns for col in required_cols):
+            return jsonify({"error": f"CSV must contain columns: {', '.join(required_cols)}"}), 400
         df["ds"] = pd.to_datetime(df["ds"])
 
+        # Initialize results
         results = {}
+
+        # Process each metric: sales, quantity, deliveries
         for metric in ["sales", "quantity", "deliveries"]:
-            col = f"y_{metric}"
-            if col not in df.columns:
-                continue
-            df_metric = df[["ds", col]].rename(columns={col: "y"})
+            df_m = df[["ds", f"y_{metric}"]].rename(columns={f"y_{metric}": "y"})
+
+            # Clone and fit model
             model = clone_model(PRETRAINED_MODELS.get(metric))
-            model.fit(df_metric)
+            model.fit(df_m)
+
+            # Generate 30-day forecast
             future = model.make_future_dataframe(periods=30)
             forecast = model.predict(future)
-            forecast_df = forecast.tail(30)[["ds", "yhat", "yhat_lower", "yhat_upper"]]
-            forecast_df["ds"] = forecast_df["ds"].dt.strftime("%Y-%m-%d")
-            results[metric] = {"forecast": forecast_df.to_dict(orient="records")}
+            last30 = forecast.tail(30)[["ds", "yhat", "yhat_lower", "yhat_upper"]].copy()
+            last30["ds"] = last30["ds"].dt.strftime("%Y-%m-%d")
 
-        if metric_name not in results:
-            return jsonify({
-                "error": f"Metric '{metric_name}' not found or no data for it."
-            }), 400
+            # Compute average daily demand and 1-month forecast
+            y = last30["yhat"].values
+            avg_daily = np.mean(y)
+            demand_1m = avg_daily * 30
 
-        forecast_optimized = results[metric_name]["forecast"]
-        yhat_values = [f["yhat"] for f in forecast_optimized]
-        avg_daily_demand = np.mean(yhat_values)
-        ci_width = [f["yhat_upper"] - f["yhat_lower"] for f in forecast_optimized]
-        std_dev_daily = np.mean(ci_width) / (2 * 1.96)  # Approximate std from 95% CI
-        z = norm.ppf(service_level)
-        std_dev_lead = std_dev_daily * np.sqrt(lead_time_days)
-        safety_stock = z * std_dev_lead
-        reorder_point = avg_daily_demand * lead_time_days + safety_stock
-        forecasted_demand = avg_daily_demand * 30
-        optimal_replenishment_quantity = max(0, forecasted_demand + safety_stock - current_inventory)
+            # Compute safety stock
+            ci = (last30["yhat_upper"] - last30["yhat_lower"]).values
+            std_daily = np.mean(ci) / (2 * 1.96) if len(ci) > 0 else 0
+            z = norm.ppf(SL)
+            std_lead = std_daily * math.sqrt(LT) if std_daily > 0 else 0
+            safety_stock = z * std_lead
 
-        results[metric_name].update({
-            "forecasted_demand": forecasted_demand,
-            "safety_stock": safety_stock,
-            "reorder_point": reorder_point,
-            "optimal_replenishment_quantity": optimal_replenishment_quantity,
-            "metric": metric_name
-        })
+            # Reorder point and optimal replenishment quantity (only for sales)
+            reorder_point = avg_daily * LT + safety_stock if metric == "sales" else None
+            optimal_qty = max(0, demand_1m + safety_stock - CI) if metric == "sales" else None
+
+            # EOQ calculation using annualized demand (only for sales)
+            annual_demand = avg_daily * 365
+            eoq = calculate_eoq(annual_demand, OC, HC) if metric == "sales" else None
+
+            # ABC classification (only for sales)
+            abc = abc_analysis([{
+                "id": "current_product",
+                "annual_demand": annual_demand,
+                "unit_cost": UC,
+                "ordering_cost": OC,
+                "holding_cost": HC
+            }])[0] if metric == "sales" else None
+
+            # Assemble results for this metric
+            results[metric] = {
+                "forecast": last30.to_dict(orient="records"),
+                "forecast_period_days": 30,
+                "forecast_period_months": 1,
+                "forecasted_demand": round(demand_1m, 2),
+            }
+            if metric == "sales":
+                results[metric].update({
+                    "safety_stock": round(safety_stock, 2),
+                    "reorder_point": round(reorder_point, 2),
+                    "optimal_replenishment_quantity": round(optimal_qty, 2),
+                    "eoq": round(eoq, 2),
+                    "abc_category": abc["abc_category"],
+                    "annual_value": round(abc["annual_value"], 2),
+                    "optimization_basis": "Optimized based on sales data",
+                    "recommendation": "Sales data is used for inventory optimization"
+                })
 
         return jsonify(results)
+
     except Exception as e:
-        logger.error(f"Error in forecast-and-optimize-product: {e}")
+        logger.error(f"Error in single forecast: {e}")
         return jsonify({"error": str(e)}), 500
 
 @app.route("/forecast-aggregate-data", methods=["POST"])
 def forecast_aggregate_data():
+    """
+    Endpoint for aggregate business forecasting.
+    Expects:
+      - CSV file with columns: ds (date), y_sales, y_revenue
+    Returns JSON with:
+      - Monthly sales forecast (12 months)
+      - Quarterly revenue forecast (4 quarters)
+      - Annual summary values
+    """
     try:
         file = request.files["file"]
         df = pd.read_csv(file)
+        required_cols = ["ds", "y_sales", "y_revenue"]
+        if not all(col in df.columns for col in required_cols):
+            return jsonify({"error": f"CSV must contain columns: {', '.join(required_cols)}"}), 400
         df["ds"] = pd.to_datetime(df["ds"])
-
         results = {}
+
         for metric in ["sales", "revenue"]:
             col = f"y_{metric}"
-            if col not in df.columns:
-                logger.warning(f"Skipping {metric}, not found in CSV.")
-                continue
+            df_m = df[["ds", col]].rename(columns={col: "y"})
+            model = Prophet() if metric == "revenue" else clone_model(PRETRAINED_MODELS.get("sales"))
+            model.fit(df_m)
 
-            df_metric = df[["ds", col]].rename(columns={col: "y"})
-
-            model = Prophet()  # Default for revenue
-            if metric == "sales":
-                model = clone_model(PRETRAINED_MODELS.get("sales"))
-
-            model.fit(df_metric)
-            future = model.make_future_dataframe(periods=90)  # Enough for quarterly
-            forecast = model.predict(future).tail(90)
+            # 12-month forecast
+            future = model.make_future_dataframe(periods=365)
+            forecast = model.predict(future).tail(365)
             forecast["ds"] = pd.to_datetime(forecast["ds"])
             forecast.set_index("ds", inplace=True)
 
-            if metric == "sales":
-                monthly = forecast.resample("M")["yhat"].sum().reset_index()
-                monthly["ds"] = monthly["ds"].dt.to_period("M").astype(str)
-                results["monthly_sales"] = monthly.to_dict(orient="records")
-            elif metric == "revenue":
-                quarterly = forecast.resample("Q")["yhat"].sum().reset_index()
-                quarterly["ds"] = quarterly["ds"].dt.to_period("Q").astype(str)
-                results["quarterly_revenue"] = quarterly.to_dict(orient="records")
+            # Monthly aggregation
+            monthly = forecast.resample("M")["yhat"].sum().reset_index()
+            monthly["ds"] = monthly["ds"].dt.strftime("%Y-%m")  # Backend still uses YYYY-MM
+            monthly["yhat"] = monthly["yhat"].round(2)
+
+            # Quarterly aggregation
+            quarterly = forecast.resample("Q")["yhat"].sum().reset_index()
+            quarterly["ds"] = quarterly["ds"].dt.to_period("Q").astype(str)
+            quarterly["yhat"] = quarterly["yhat"].round(2)
+
+            results[f"monthly_{metric}"] = monthly.to_dict(orient="records")
+            results[f"quarterly_{metric}"] = quarterly.to_dict(orient="records")
+            results[f"annual_{metric}_forecast"] = round(forecast["yhat"].sum(), 2)
 
         return jsonify(results)
+
     except Exception as e:
-        logger.error(f"Error in forecast-aggregate-data: {e}")
+        logger.error(f"Error in aggregate forecast: {e}")
         return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":

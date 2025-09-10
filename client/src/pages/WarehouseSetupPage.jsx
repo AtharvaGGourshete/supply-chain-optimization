@@ -24,6 +24,7 @@ import {
   Legend,
 } from "recharts";
 import { ArrowLeft, ArrowRight, Upload } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 // Stepper component
 const Stepper = ({ currentStep, steps }) => (
@@ -234,6 +235,7 @@ export default function WarehouseSetupPage() {
   const [aggregateData, setAggregateData] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const API_URL_SINGLE = 'http://localhost:5000/forecast-and-optimize-product';
   const API_URL_AGGREGATE = 'http://localhost:5000/forecast-aggregate-data';
@@ -296,12 +298,11 @@ export default function WarehouseSetupPage() {
       }
 
       const results = await response.json();
-      if (formData.analysisType === 'single') {
-        setForecastData(results);
-      } else {
-        setAggregateData(results);
-      }
-      setStep(4);
+      if (formData.analysisType === "single") {
+      navigate("/dashboard", { state: { forecastData: results } });
+    } else {  
+      navigate("/dashboard", { state: { aggregateData: results } });
+    }
     } catch (err) {
       console.error("Error during forecast:", err);
       setError(err.message || "Failed to fetch forecast data. Please check the backend server.");

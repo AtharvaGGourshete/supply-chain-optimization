@@ -286,6 +286,9 @@ button:focus-visible {
 
   --sidebar-ring: oklch(0.556 0 0);
 }
+.poppins {
+  font-family: 'Poppins', sans-serif;
+}
 
 @layer base {
   * {

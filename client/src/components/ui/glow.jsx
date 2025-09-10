@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
-const Glow = ({ variant = 'top', intensity = 'high', color = 'golden1' }) => {
+const Glow = ({ variant = 'top', intensity = 'high', color = 'green' }) => {
   // Map intensity prop to a numerical opacity value for the animation
   const intensityValues = {
     low: 0.4,

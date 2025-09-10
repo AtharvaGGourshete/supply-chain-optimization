@@ -11,7 +11,7 @@ export function AppleCardsCarouselDemo() {
   ));
 
   return (
-    <div className="w-full h-full py-24 bg-[#101010] relative overflow-hidden">
+    <div className="w-full h-full py-24 bg-white/100 relative overflow-hidden">
       {/* Background Effects */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-[#DDDBCB] to-transparent rounded-full blur-3xl animate-pulse"></div>
@@ -20,21 +20,19 @@ export function AppleCardsCarouselDemo() {
 
       {/* Section Header */}
       <div className="max-w-7xl mx-auto px-4 mb-16 text-center relative z-10">
-        <div className="inline-block p-3 bg-[#181818] rounded-2xl border border-[#DDDBCB]/20 mb-6">
-          <span className="text-[#DDDBCB]/60 text-sm font-medium tracking-wider uppercase">
+        <div className="inline-block p-3 bg-[#143234] rounded-2xl border border-[#DDDBCB]/20 mb-6">
+          <span className="text-white/75 text-sm font-medium tracking-wider uppercase">
             Supply Chain Solutions
           </span>
         </div>
 
-        <h2 className="text-4xl md:text-6xl font-bold text-white mb-4 leading-tight">
-          <span className="bg-gradient-to-r from-white via-[#DDDBCB] to-white bg-clip-text text-transparent">
-            Optimize Your Operations
+        <h2 className="text-4xl md:text-6xl font-bold mb-4 leading-tight">
+          <span className="bg-gradient-to-r from-white via-[#DDDBCB] to-white bg-clip-text text-black">
+            Optimize Your <span className="text-[#274c4f]">Operations</span>
           </span>
         </h2>
 
-        <div className="mx-auto h-0.5 bg-gradient-to-r from-transparent via-[#DDDBCB]/30 to-transparent mb-8 w-96"></div>
-
-        <p className="text-lg text-[#DDDBCB]/80 max-w-3xl mx-auto leading-relaxed">
+        <p className="text-lg text-gray-800 max-w-3xl mx-auto leading-relaxed">
           Discover how ChainSaw transforms complex supply chain challenges into streamlined solutions
         </p>
       </div>

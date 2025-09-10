@@ -154,7 +154,7 @@ export default function RegisterPage() {
   );
 
   return (
-    <div className="min-h-screen flex bg-[#101010]">
+    <div className="min-h-screen flex bg-[#143234]">
       <div className="absolute inset-0 z-0 w-full h-full pointer-events-none">
         <Glow variant="top" intensity="high" />
       </div>
@@ -263,7 +263,7 @@ export default function RegisterPage() {
                       </div>
                     </div>
                     <Button
-                      className="w-full h-12 mt-6 rounded-full bg-yellow-600 hover:bg-amber-500 cursor-pointer"
+                      className="w-full h-12 mt-6 rounded-full bg-[#276266] hover:bg-[#16383a] cursor-pointer"
                       type="submit"
                       disabled={isRegisterLoading}
                     >
@@ -333,7 +333,7 @@ export default function RegisterPage() {
                       </div>
                     </div>
                     <Button
-                      className="w-full h-12 mt-6 rounded-full bg-yellow-600 hover:bg-amber-500 cursor-pointer"
+                      className="w-full h-12 mt-6 rounded-full bg-[#276266] hover:bg-[#16383a] cursor-pointer"
                       type="submit"
                       disabled={isLoginLoading}
                     >

@@ -82,18 +82,18 @@ const SleekNavbar = () => {
                   </button>
                 </Link>
 
-                <a
+                {/* <a
                   href="#"
                   className="text-[#DDDBCB] dark:text-gray-300 hover:text-[#CEAF53] dark:hover:text-blue-400 px-3 py-2 text-sm font-medium transition-colors duration-200"
                 >
                   Documentation
-                </a>
-                <a
+                </a> */}
+                {/* <a
                   href="#"
                   className="text-[#DDDBCB] dark:text-gray-300 hover:text-[#CEAF53] dark:hover:text-blue-400 px-3 py-2 text-sm font-medium transition-colors duration-200"
                 >
                   Pricing
-                </a>
+                </a> */}
               </div>
             </div>
 

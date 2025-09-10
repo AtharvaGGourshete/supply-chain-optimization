@@ -166,9 +166,9 @@ const SingleProductDashboard = ({ forecastData, onReset, isLoading }) => {
     <div className="w-full">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         {kpis.map(({ label, value, color, icon }) => (
-          <Card key={label} className="bg-[#101010] border-gray-700 text-white group relative">
+          <Card key={label} className="bg-white border-gray-700 text-white group relative">
             
-            <div className="relative bg-[#101010] rounded-lg">
+            <div className="relative bg-white rounded-lg">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium text-gray-300">{label}</CardTitle>
                     {React.cloneElement(icon, { className: "h-4 w-4 text-muted-foreground"})}
@@ -217,12 +217,12 @@ const Dashboard = () => {
       return () => clearTimeout(timer);
   }, []);
 
-  const handleReset = () => navigate("/");
+  const handleReset = () => navigate("/warehouse");
 
   const renderContent = () => {
     if (!forecastData && !isLoading) {
       return (
-        <div className="text-center text-white">
+        <div className="text-center text-black">
           <h2 className="text-2xl font-bold mb-4">No Forecast Data Available</h2>
           <p className="mb-6">To view the dashboard, please run a new forecast.</p>
           <Button onClick={handleReset} className="bg-yellow-600 hover:bg-yellow-700">Go Back to Forecast Page</Button>
@@ -234,9 +234,7 @@ const Dashboard = () => {
 
   return (
     <div className="flex h-screen bg-gray-100 dark:bg-gray-900">
-      <div className="absolute inset-0 z-0 w-full h-full pointer-events-none">
-            <Glow variant="top" intensity="high" />
-          </div>
+      
       <div className="hidden lg:flex lg:flex-shrink-0"><Sidebar /></div>
       {isSidebarOpen && (
         <div className="fixed inset-0 z-40 flex lg:hidden">
@@ -252,7 +250,7 @@ const Dashboard = () => {
           <button onClick={() => setIsSidebarOpen(true)} className="text-gray-400"><FiMenu className="h-6 w-6" /></button>
           <h1 className="text-xl font-semibold text-white">Dashboard</h1>
         </header>
-        <main className="flex-1 overflow-y-auto p-6 bg-[#101010]">
+        <main className="flex-1 overflow-y-auto p-6 bg-white text-black">
           {renderContent()}
         </main>
       </div>

@@ -43,7 +43,7 @@ const SleekNavbar = () => {
             <div className="flex items-center">
               <Link to="/">
                 <img
-                  src="/box.png"
+                  src="/shape.png"
                   alt="ChainSaw Logo"
                   className="h-10 w-10 mr-2"
                 />

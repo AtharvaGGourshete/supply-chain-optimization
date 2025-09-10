@@ -38,7 +38,7 @@ const Footer = () => {
           {/* Brand Column */}
           <div className="col-span-2 lg:col-span-2">
             <div className="flex items-center space-x-2">
-              <img src="/box.png" alt="ChainSaw Logo" className="h-10 w-10" />
+              <img src="/shape.png" alt="ChainSaw Logo" className="h-10 w-10" />
               <h3 className="text-2xl font-bold text-white poppins">ChainSaw</h3>
             </div>
             <p className="mt-4 text-white">

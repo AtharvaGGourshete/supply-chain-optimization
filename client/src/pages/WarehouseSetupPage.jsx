@@ -55,9 +55,9 @@ const Stepper = ({ currentStep, steps }) => (
             <div
               className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg transition-all duration-300 ${
                 isCompleted
-                  ? "bg-yellow-500 text-black"
+                  ? "bg-white text-black"
                   : isCurrent
-                  ? "bg-yellow-600 border-2 border-yellow-400 text-white"
+                  ? "bg-white border-2 border-white text-black"
                   : "bg-gray-700 text-gray-400"
               }`}
             >
@@ -74,7 +74,7 @@ const Stepper = ({ currentStep, steps }) => (
           {stepNumber < steps.length && (
             <div
               className={`flex-1 h-1 mx-2 transition-all duration-300 ${
-                isCompleted ? "bg-yellow-200" : "bg-gray-700"
+                isCompleted ? "bg-white" : "bg-gray-700"
               }`}
             ></div>
           )}
@@ -619,7 +619,7 @@ export default function WarehouseSetupPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
                 <Button
                   size="lg"
-                  className="h-40 bg-yellow-600 hover:bg-yellow-700 cursor-pointer font-semibold text-lg"
+                  className="h-40 bg-[#1F2326] hover:bg-white hover:text-black cursor-pointer font-semibold text-lg"
                   onClick={() =>
                     setFormData((prev) => ({ ...prev, analysisType: "single" }))
                   }
@@ -628,7 +628,7 @@ export default function WarehouseSetupPage() {
                 </Button>
                 <Button
                   size="lg"
-                  className="h-40 bg-yellow-600 hover:bg-yellow-700 cursor-pointer font-semibold text-lg"
+                  className="h-40 bg-[#1F2326] hover:bg-white hover:text-black cursor-pointer font-semibold text-lg"
                   onClick={() =>
                     setFormData((prev) => ({
                       ...prev,
@@ -877,14 +877,14 @@ export default function WarehouseSetupPage() {
   return (
     <>
       <SleekNavbar />
-      <div className="min-h-screen bg-[#101010] text-[#DDDBCB] font-sans flex flex-col items-center justify-center p-4 pt-24 md:pt-16 relative overflow-hidden">
+      <div className="min-h-screen bg-[#143234] text-white poppins flex flex-col items-center justify-center p-4 pt-24 md:pt-16 relative overflow-hidden">
         <div className="relative z-10 flex flex-col items-center w-full">
           <div className="text-center max-w-5xl mb-12 mt-16">
             <span className="text-5xl md:text-6xl font-bold font-poppins">
               Get done with your warehouse setup real quick.
             </span>
           </div>
-          <Card className="w-full max-w-6xl rounded-2xl border border-white/10 bg-black/40 shadow-2xl backdrop-blur-xl">
+          <Card className="w-full max-w-6xl rounded-2xl border border-white/10 bg-[#0B0F12] shadow-2xl backdrop-blur-xl">
             <CardHeader className="p-8">
               <Stepper
                 currentStep={step}
@@ -900,7 +900,7 @@ export default function WarehouseSetupPage() {
                   <Button
                     size="lg"
                     variant="outline"
-                    className="cursor-pointer bg-yellow-600 hover:bg-yellow-700 text-white hover:text-white border-none"
+                    className="cursor-pointer bg-[#1F2326] hover:bg-white text-white  hover:text-black border-none"
                     onClick={() => {
                       if (step === 3 && formData.analysisType) {
                         setFormData((prev) => ({
@@ -921,7 +921,7 @@ export default function WarehouseSetupPage() {
                 {step < 3 || (step === 3 && formData.analysisType) ? (
                   <Button
                     size="lg"
-                    className="bg-yellow-600 hover:bg-yellow-700 cursor-pointer"
+                    className="bg-[#1F2326] hover:bg-white hover:text-black cursor-pointer"
                     onClick={() => {
                       if (step === 3) handleForecast();
                       else setStep(step + 1);

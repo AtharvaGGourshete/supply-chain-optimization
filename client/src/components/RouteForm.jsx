@@ -9,6 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Route, X } from "lucide-react";
 
 const geocodeAddress = async (address) => {
   const token = import.meta.env.VITE_MAPBOX_TOKEN;
@@ -22,7 +23,6 @@ const geocodeAddress = async (address) => {
   return data.features[0].geometry.coordinates; // [lng, lat]
 };
 
-
 const RouteForm = ({ onRoutesOptimized, onError, setLoading }) => {
   const [depot, setDepot] = useState("");
   const [locations, setLocations] = useState([""]);
@@ -30,99 +30,110 @@ const RouteForm = ({ onRoutesOptimized, onError, setLoading }) => {
 
   const addLocation = () => setLocations([...locations, ""]);
 
+  const removeLocation = (index) => {
+    if (locations.length > 1) {
+      const next = locations.filter((_, idx) => idx !== index);
+      setLocations(next);
+    }
+  };
+
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  setLoading(true);
-  onError(null);
+    e.preventDefault();
+    setLoading(true);
+    onError(null);
 
-  try {
-    // Geocode depot + all locations
-    const depotCoords = await geocodeAddress(depot);
-    const locationCoords = await Promise.all(
-      locations.map((loc) => geocodeAddress(loc))
-    );
+    try {
+      const depotCoords = await geocodeAddress(depot);
+      const locationCoords = await Promise.all(
+        locations.map((loc) => geocodeAddress(loc))
+      );
+      const coordinates = [depotCoords, ...locationCoords];
+      const body = { coordinates, profile };
 
-    const coordinates = [depotCoords, ...locationCoords];
+      const res = await fetch("http://localhost:3000/api/optimize", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
 
-    const body = { coordinates, profile };
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Optimization failed");
 
-    const res = await fetch("http://localhost:3000/api/optimize", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
-
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || "Optimization failed");
-
-    onRoutesOptimized(data.routes);
-  } catch (err) {
-    onError(err.message);
-  } finally {
-    setLoading(false);
-  }
-};
-
+      onRoutesOptimized(data.routes);
+    } catch (err) {
+      onError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <Card className="bg-[#131314] border border-neutral-700 text-white">
+    <Card className="bg-[#1A1A1A] border border-neutral-700 text-white shadow-2xl">
       <CardHeader>
-        <CardTitle> Enter Route Details</CardTitle>
+        <CardTitle className="text-center text-xl">Enter Route Details</CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Depot input */}
           <Input
             value={depot}
             onChange={(e) => setDepot(e.target.value)}
-            placeholder="Depot address"
+            placeholder="Depot Address (Start)"
             required
-            className="bg-neutral-800 border-neutral-600 text-white"
+            className="bg-neutral-800 border-neutral-600 text-white placeholder:text-neutral-400"
           />
 
-          {/* Delivery locations */}
           {locations.map((loc, idx) => (
-            <Input
-              key={idx}
-              value={loc}
-              onChange={(e) => {
-                const next = [...locations];
-                next[idx] = e.target.value;
-                setLocations(next);
-              }}
-              placeholder={`Delivery ${idx + 1}`}
-              required
-              className="bg-neutral-800 border-neutral-600 text-white"
-            />
+            <div key={idx} className="flex items-center space-x-2">
+              <Input
+                value={loc}
+                onChange={(e) => {
+                  const next = [...locations];
+                  next[idx] = e.target.value;
+                  setLocations(next);
+                }}
+                placeholder={`Delivery Location ${idx + 1}`}
+                required
+                className="bg-neutral-800 border-neutral-600 text-white placeholder:text-neutral-400"
+              />
+              {locations.length > 1 && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => removeLocation(idx)}
+                  className="text-red-500 hover:bg-red-900/50 hover:text-red-400"
+                >
+                  <X size={18} />
+                </Button>
+              )}
+            </div>
           ))}
 
-          {/* Add location button */}
           <Button
             type="button"
-            variant="secondary"
+            variant="outline"
             onClick={addLocation}
-            className="w-full"
+            className="w-full border-dashed bg-[#1F2326] border-green-500 text-green-500 hover:bg-green-900/50 hover:text-green-400 cursor-pointer"
           >
-            Add Delivery
+            Add Delivery Location
           </Button>
 
-          {/* Profile dropdown */}
           <Select value={profile} onValueChange={setProfile}>
             <SelectTrigger className="bg-neutral-800 border-neutral-600 text-white">
-              <SelectValue placeholder="Select profile" />
+              <SelectValue placeholder="Select transportation profile" />
             </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="driving">Driving</SelectItem>
-              <SelectItem value="driving-traffic">Driving with Traffic</SelectItem>
+            <SelectContent className="bg-neutral-800 border-neutral-600 text-white">
+              <SelectItem value="driving" className="hover:bg-neutral-700">Driving</SelectItem>
+              <SelectItem value="driving-traffic" className="hover:bg-neutral-700">Driving with Traffic</SelectItem>
             </SelectContent>
           </Select>
 
-          {/* Submit button */}
           <Button
             type="submit"
-            className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold"
+            className="w-52 bg-[#1F2326] hover:bg-white text-white hover:text-black cursor-pointer font-bold text-lg py-6"
           >
-          Optimize Routes
+            <Route />
+            Optimize Routes
           </Button>
         </form>
       </CardContent>

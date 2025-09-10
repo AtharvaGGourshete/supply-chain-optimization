@@ -1,5 +1,4 @@
 "use client";
-
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import React from "react";
@@ -13,6 +12,7 @@ import "@fontsource/poppins/500.css";
 import "@fontsource/poppins/600.css";
 import "@fontsource/poppins/700.css";
 import { useState, useEffect } from "react";
+import { Ripple } from "@/components/magicui/ripple";
 
 const LandingPage = () => {
   // Data for the "How It Works" process cards
@@ -53,9 +53,16 @@ const LandingPage = () => {
       <main className="bg-gray-50 text-gray-800 font-poppins">
         {/* Hero Section */}
         <section className="relative min-h-screen flex items-center justify-center py-20 bg-white/100 overflow-hidden">
+          {/* Ripple Background */}
+          <div className="absolute inset-0 z-10 flex items-center justify-center overflow-hidden w-full h-full mt-20">
+            {/* The Ripple will be contained here, in the background */}
+            <Ripple/>
+          </div>
+
           {/* Main content */}
-          <div className="relative z-20 container mx-auto px-4 mt-28 w-full">
+          <div className="relative z-20 container mx-auto px-4 w-full">
             <div className="flex flex-col items-center text-center max-w-4xl mx-auto space-y-8">
+              {/* The original div wrapping Ripple has been removed from here */}
               <span className="text-6xl text-black poppins font-medium">
                 Cut Through Complexity.
                 <div className="h-3"></div>

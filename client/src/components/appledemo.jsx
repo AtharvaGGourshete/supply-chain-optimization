@@ -135,7 +135,7 @@ const data = [
   {
     category: "AI-Powered Analytics",
     title: "Intelligent Demand Forecasting",
-    src: "/logo1.png",
+    src: "/logo1.jpeg",
     content: <DummyContent />,
   },
   {
@@ -153,19 +153,19 @@ const data = [
   {
     category: "Warehouse",
     title: "Automated Warehouse Operations",
-    src: "/logo4.png",
+    src: "/logo4.jpeg",
     content: <DummyContent />,
   },
   {
     category: "Performance",
     title: "Advanced Analytics Dashboard",
-    src: "/logo5.png",
+    src: "/logo5.jpeg",
     content: <DummyContent />,
   },
   {
     category: "Integration",
     title: "Seamless Platform Integration",
-    src: "/logo6.png",
+    src: "/logo6.jpeg",
     content: <DummyContent />,
   },
 ];

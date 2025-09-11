@@ -713,160 +713,194 @@ export default function WarehouseSetupPage() {
                 )}
               </div>
               // ... inside the 'case 3' return for 'single' analysis type ...
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                {/* Service Level */}
+                <div className="space-y-2">
+                  <Tooltip>
+                    <Label
+                      htmlFor="serviceLevel"
+                      className="text-lg text-[#DDDBCB] flex items-center"
+                    >
+                      Service Level (0.0 - 1.0)
+                      <Link
+                        to="/documentation?highlight=serviceLevel"
+                        className="ml-2"
+                      >
+                        <TooltipTrigger>
+                          <Info className="w-4 h-4 cursor-pointer text-gray-400 hover:text-white" />
+                        </TooltipTrigger>
+                      </Link>
+                      <TooltipContent>
+                        <p>Learn More</p>
+                      </TooltipContent>
+                    </Label>
+                    <Input
+                      id="serviceLevel"
+                      type="number"
+                      step="0.01"
+                      placeholder="e.g., 0.95"
+                      value={formData.serviceLevel}
+                      onChange={handleNumericChange("serviceLevel")}
+                      className={inputStyles}
+                    />
+                  </Tooltip>
+                </div>
 
-<div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-  {/* Service Level */}
-  <div className="space-y-2">
-    <Tooltip>
-      <Label htmlFor="serviceLevel" className="text-lg text-[#DDDBCB] flex items-center">
-        Service Level (0.0 - 1.0)
-        <Link to="/documentation?highlight=serviceLevel" className="ml-2">
-          <TooltipTrigger>
-            <Info className="w-4 h-4 cursor-pointer text-gray-400 hover:text-white" />
-          </TooltipTrigger>
-        </Link>
-        <TooltipContent>
-          <p>Learn More</p>
-        </TooltipContent>
-      </Label>
-      <Input
-        id="serviceLevel"
-        type="number"
-        step="0.01"
-        placeholder="e.g., 0.95"
-        value={formData.serviceLevel}
-        onChange={handleNumericChange("serviceLevel")}
-        className={inputStyles}
-      />
-    </Tooltip>
-  </div>
+                {/* Lead Time */}
+                <div className="space-y-2">
+                  <Tooltip>
+                    <Label
+                      htmlFor="leadTimeDays"
+                      className="text-lg text-[#DDDBCB] flex items-center"
+                    >
+                      Lead Time (Days)
+                      <Link
+                        to="/documentation?highlight=leadTime"
+                        className="ml-2"
+                      >
+                        <TooltipTrigger>
+                          <Info className="w-4 h-4 cursor-pointer text-gray-400 hover:text-white" />
+                        </TooltipTrigger>
+                      </Link>
+                      <TooltipContent>
+                        <p>Learn More</p>
+                      </TooltipContent>
+                    </Label>
+                    <Input
+                      id="leadTimeDays"
+                      type="number"
+                      placeholder="e.g., 7"
+                      value={formData.leadTimeDays}
+                      onChange={handleNumericChange("leadTimeDays")}
+                      className={inputStyles}
+                    />
+                  </Tooltip>
+                </div>
 
-  {/* Lead Time */}
-  <div className="space-y-2">
-    <Tooltip>
-      <Label htmlFor="leadTimeDays" className="text-lg text-[#DDDBCB] flex items-center">
-        Lead Time (Days)
-        <Link to="/documentation?highlight=leadTime" className="ml-2">
-          <TooltipTrigger>
-            <Info className="w-4 h-4 cursor-pointer text-gray-400 hover:text-white" />
-          </TooltipTrigger>
-        </Link>
-        <TooltipContent>
-          <p>Learn More</p>
-        </TooltipContent>
-      </Label>
-      <Input
-        id="leadTimeDays"
-        type="number"
-        placeholder="e.g., 7"
-        value={formData.leadTimeDays}
-        onChange={handleNumericChange("leadTimeDays")}
-        className={inputStyles}
-      />
-    </Tooltip>
-  </div>
+                {/* Current On-Hand Inventory */}
+                <div className="space-y-2">
+                  <Tooltip>
+                    <Label
+                      htmlFor="currentInventory"
+                      className="text-lg text-[#DDDBCB] flex items-center"
+                    >
+                      Current On-Hand Inventory
+                      <Link
+                        to="/documentation?highlight=currentInventory"
+                        className="ml-2"
+                      >
+                        <TooltipTrigger>
+                          <Info className="w-4 h-4 cursor-pointer text-gray-400 hover:text-white" />
+                        </TooltipTrigger>
+                      </Link>
+                      <TooltipContent>
+                        <p>Learn More</p>
+                      </TooltipContent>
+                    </Label>
+                    <Input
+                      id="currentInventory"
+                      type="number"
+                      placeholder="e.g., 250"
+                      value={formData.currentInventory}
+                      onChange={handleNumericChange("currentInventory")}
+                      className={inputStyles}
+                    />
+                  </Tooltip>
+                </div>
 
-  {/* Current On-Hand Inventory */}
-  <div className="space-y-2">
-    <Tooltip>
-      <Label htmlFor="currentInventory" className="text-lg text-[#DDDBCB] flex items-center">
-        Current On-Hand Inventory
-        <Link to="/documentation?highlight=currentInventory" className="ml-2">
-          <TooltipTrigger>
-            <Info className="w-4 h-4 cursor-pointer text-gray-400 hover:text-white" />
-          </TooltipTrigger>
-        </Link>
-        <TooltipContent>
-          <p>Learn More</p>
-        </TooltipContent>
-      </Label>
-      <Input
-        id="currentInventory"
-        type="number"
-        placeholder="e.g., 250"
-        value={formData.currentInventory}
-        onChange={handleNumericChange("currentInventory")}
-        className={inputStyles}
-      />
-    </Tooltip>
-  </div>
+                {/* Ordering Cost */}
+                <div className="space-y-2">
+                  <Tooltip>
+                    <Label
+                      htmlFor="orderingCost"
+                      className="text-lg text-[#DDDBCB] flex items-center"
+                    >
+                      Ordering Cost
+                      <Link
+                        to="/documentation?highlight=orderingCost"
+                        className="ml-2"
+                      >
+                        <TooltipTrigger>
+                          <Info className="w-4 h-4 cursor-pointer text-gray-400 hover:text-white" />
+                        </TooltipTrigger>
+                      </Link>
+                      <TooltipContent>
+                        <p>Learn More</p>
+                      </TooltipContent>
+                    </Label>
+                    <Input
+                      id="orderingCost"
+                      type="number"
+                      placeholder="e.g., 100"
+                      value={formData.orderingCost}
+                      onChange={handleNumericChange("orderingCost")}
+                      className={inputStyles}
+                    />
+                  </Tooltip>
+                </div>
 
-  {/* Ordering Cost */}
-  <div className="space-y-2">
-    <Tooltip>
-      <Label htmlFor="orderingCost" className="text-lg text-[#DDDBCB] flex items-center">
-        Ordering Cost
-        <Link to="/documentation?highlight=orderingCost" className="ml-2">
-          <TooltipTrigger>
-            <Info className="w-4 h-4 cursor-pointer text-gray-400 hover:text-white" />
-          </TooltipTrigger>
-        </Link>
-        <TooltipContent>
-          <p>Learn More</p>
-        </TooltipContent>
-      </Label>
-      <Input
-        id="orderingCost"
-        type="number"
-        placeholder="e.g., 100"
-        value={formData.orderingCost}
-        onChange={handleNumericChange("orderingCost")}
-        className={inputStyles}
-      />
-    </Tooltip>
-  </div>
+                {/* Holding Cost */}
+                <div className="space-y-2">
+                  <Tooltip>
+                    <Label
+                      htmlFor="holdingCost"
+                      className="text-lg text-[#DDDBCB] flex items-center"
+                    >
+                      Holding Cost
+                      <Link
+                        to="/documentation?highlight=holdingCost"
+                        className="ml-2"
+                      >
+                        <TooltipTrigger>
+                          <Info className="w-4 h-4 cursor-pointer text-gray-400 hover:text-white" />
+                        </TooltipTrigger>
+                      </Link>
+                      <TooltipContent>
+                        <p>Learn More</p>
+                      </TooltipContent>
+                    </Label>
+                    <Input
+                      id="holdingCost"
+                      type="number"
+                      placeholder="e.g., 10"
+                      value={formData.holdingCost}
+                      onChange={handleNumericChange("holdingCost")}
+                      className={inputStyles}
+                    />
+                  </Tooltip>
+                </div>
 
-  {/* Holding Cost */}
-  <div className="space-y-2">
-    <Tooltip>
-      <Label htmlFor="holdingCost" className="text-lg text-[#DDDBCB] flex items-center">
-        Holding Cost
-        <Link to="/documentation?highlight=holdingCost" className="ml-2">
-          <TooltipTrigger>
-            <Info className="w-4 h-4 cursor-pointer text-gray-400 hover:text-white" />
-          </TooltipTrigger>
-        </Link>
-        <TooltipContent>
-          <p>Learn More</p>
-        </TooltipContent>
-      </Label>
-      <Input
-        id="holdingCost"
-        type="number"
-        placeholder="e.g., 10"
-        value={formData.holdingCost}
-        onChange={handleNumericChange("holdingCost")}
-        className={inputStyles}
-      />
-    </Tooltip>
-  </div>
-
-  {/* Unit Cost */}
-  <div className="space-y-2">
-    <Tooltip>
-      <Label htmlFor="unitCost" className="text-lg text-[#DDDBCB] flex items-center">
-        Unit Cost
-        <Link to="/documentation?highlight=unitCost" className="ml-2">
-          <TooltipTrigger>
-            <Info className="w-4 h-4 cursor-pointer text-gray-400 hover:text-white" />
-          </TooltipTrigger>
-        </Link>
-        <TooltipContent>
-          <p>Learn More</p>
-        </TooltipContent>
-      </Label>
-      <Input
-        id="unitCost"
-        type="number"
-        placeholder="e.g., 50"
-        value={formData.unitCost}
-        onChange={handleNumericChange("unitCost")}
-        className={inputStyles}
-      />
-    </Tooltip>
-  </div>
-</div>
-
+                {/* Unit Cost */}
+                <div className="space-y-2">
+                  <Tooltip>
+                    <Label
+                      htmlFor="unitCost"
+                      className="text-lg text-[#DDDBCB] flex items-center"
+                    >
+                      Unit Cost
+                      <Link
+                        to="/documentation?highlight=unitCost"
+                        className="ml-2"
+                      >
+                        <TooltipTrigger>
+                          <Info className="w-4 h-4 cursor-pointer text-gray-400 hover:text-white" />
+                        </TooltipTrigger>
+                      </Link>
+                      <TooltipContent>
+                        <p>Learn More</p>
+                      </TooltipContent>
+                    </Label>
+                    <Input
+                      id="unitCost"
+                      type="number"
+                      placeholder="e.g., 50"
+                      value={formData.unitCost}
+                      onChange={handleNumericChange("unitCost")}
+                      className={inputStyles}
+                    />
+                  </Tooltip>
+                </div>
+              </div>
               <p className="text-center text-sm text-gray-400">
                 Ensure the file has columns for:{" "}
                 <strong className="text-white/80">ds</strong>,{" "}
@@ -965,7 +999,7 @@ export default function WarehouseSetupPage() {
   return (
     <>
       <SleekNavbar />
-      <div className="min-h-screen bg-[#143234] text-white poppins flex flex-col items-center justify-center p-4 pt-24 md:pt-16 relative overflow-hidden">
+      <div className="min-h-screen bg-[#143234] text-white poppins flex flex-col items-center justify-center p-4 pt-24 pb-28 md:pt-16 relative overflow-hidden">
         <div className="relative z-10 flex flex-col items-center w-full">
           <div className="text-center max-w-5xl mb-12 mt-16">
             <span className="text-5xl md:text-6xl font-bold font-poppins">

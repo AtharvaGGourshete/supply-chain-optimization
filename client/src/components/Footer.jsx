@@ -39,7 +39,9 @@ const Footer = () => {
           <div className="col-span-2 lg:col-span-2">
             <div className="flex items-center space-x-2">
               <img src="/shape.png" alt="ChainSaw Logo" className="h-10 w-10" />
-              <h3 className="text-2xl font-bold text-white poppins">ChainSaw</h3>
+              <h3 className="text-2xl font-bold text-white poppins">
+                ChainSaw
+              </h3>
             </div>
             <p className="mt-4 text-white">
               The recipe for optimization perfection.
@@ -49,7 +51,9 @@ const Footer = () => {
           {/* Link Columns */}
           {footerLinks.map((column) => (
             <div key={column.title}>
-              <h4 className="text-lg font-semibold text-white font-bold">{column.title}</h4>
+              <h4 className="text-lg font-semibold text-white font-bold">
+                {column.title}
+              </h4>
               <ul className="mt-4 space-y-3">
                 {column.links.map((link) => (
                   <li key={link.name}>
@@ -75,22 +79,11 @@ const Footer = () => {
           </p>
           <div className="flex space-x-4">
             <a
-              href="#"
-              className="text-white hover:scale-110 transform transition-transform duration-200"
-            >
-              <Twitter size={20} />
-            </a>
-            <a
-              href="#"
-              className="text-white hover:scale-110 transform transition-transform duration-200"
+              href="https://github.com/AtharvaGGourshete/supply-chain-optimization"
+              className="text-white hover:scale-110 transform transition-transform duration-200 flex gap-2"
             >
               <Github size={20} />
-            </a>
-            <a
-              href="#"
-              className="text-white hover:scale-110 transform transition-transform duration-200"
-            >
-              <Linkedin size={20} />
+              <span>GitHub</span>
             </a>
           </div>
         </div>

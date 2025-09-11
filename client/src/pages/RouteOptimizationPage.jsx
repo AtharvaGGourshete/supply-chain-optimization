@@ -67,7 +67,7 @@ const RouteOptimizationPage = () => {
               <>
                 <RouteMap routes={routes} onReset={handleReset} />
                 {/* Only added this component under the map */}
-                <RouteInsights routes={routes} />
+                <RouteInsights routes={routes}/>
               </>
             )}
           </div>

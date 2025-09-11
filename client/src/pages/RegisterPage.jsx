@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,6 +17,7 @@ import {
   useRegisterUserMutation,
 } from "@/features/api/authApi";
 import Glow from "@/components/ui/glow";
+import { toast } from "sonner"; // Import toast
 
 export default function RegisterPage() {
   const navigate = useNavigate();
@@ -39,7 +40,6 @@ export default function RegisterPage() {
   const [isRegisterLoading, setIsRegisterLoading] = useState(false);
   const [loginError, setLoginError] = useState("");
   const [registerError, setRegisterError] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
 
   const isStrongPassword = (password) =>
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/.test(password);
@@ -66,8 +66,8 @@ export default function RegisterPage() {
         email: loginData.email,
         password: loginData.password,
       }).unwrap();
-      setSuccessMessage("Login successful! Redirecting...");
-      setTimeout(() => navigate("/"), 800);
+      toast.success("Login successful! Redirecting...");
+      setTimeout(() => navigate("/"), 1200); // Allow time for toast
     } catch (err) {
       setLoginError(err?.data?.message || "Login failed");
     } finally {
@@ -128,8 +128,8 @@ export default function RegisterPage() {
         email: registerData.email,
         password: registerData.password,
       }).unwrap();
-      setSuccessMessage("Registration successful! Redirecting...");
-      setTimeout(() => navigate("/"), 300);
+      toast.success("Registration successful! Redirecting...");
+      setTimeout(() => navigate("/"), 1200); // Allow time for toast
     } catch (err) {
       const msg =
         (Array.isArray(err?.data?.errors) && err.data.errors?.msg) ||
@@ -146,7 +146,7 @@ export default function RegisterPage() {
       type="button"
       variant="ghost"
       size="sm"
-      className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+      className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent text-gray-400 hover:text-white"
       onClick={onToggle}
     >
       {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -154,204 +154,201 @@ export default function RegisterPage() {
   );
 
   return (
-    <div className="min-h-screen flex bg-[#143234]">
+    <div className="min-h-screen flex items-center justify-center bg-[#143234] p-4">
       <div className="absolute inset-0 z-0 w-full h-full pointer-events-none">
         <Glow variant="top" intensity="high" />
       </div>
-      <div className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8">
-        <div className="w-full max-w-md space-y-8">
-          {successMessage && (
-            <div className="p-3 bg-green-100 border border-green-400 text-green-700 rounded">
-              {successMessage}
-            </div>
-          )}
+      <div className="relative z-10 w-full max-w-md space-y-8">
+        <Tabs defaultValue="register" className="w-full">
+          <TabsList className="grid w-full grid-cols-2 mb-4 rounded-xl bg-black/20 border border-white/10 p-1">
+            <TabsTrigger
+              value="register"
+              className="cursor-pointer rounded-lg data-[state=active]:bg-[#276266] data-[state=active]:text-white text-gray-300"
+            >
+              Register
+            </TabsTrigger>
+            <TabsTrigger
+              value="login"
+              className="cursor-pointer rounded-lg data-[state=active]:bg-[#276266] data-[state=active]:text-white text-gray-300"
+            >
+              Login
+            </TabsTrigger>
+          </TabsList>
 
-          <Tabs defaultValue="register" className="w-full ">
-            <TabsList className="grid w-full grid-cols-2 mb-3 rounded-full bg-[#303030]">
-              <TabsTrigger value="register" className="cursor-pointer rounded-full">
-                Register
-              </TabsTrigger>
-              <TabsTrigger value="login" className="cursor-pointer rounded-full">
-                Login
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="register" className="mt-0">
-              <Card className="w-full border-0 shadow-none p-10 bg-[#101010] text-white">
-                <CardHeader className="space-y-1 px-0">
-                  <CardTitle className="text-2xl font-bold text-left">
-                    Create account
-                  </CardTitle>
-                  <CardDescription className="text-left">
-                    Enter details to create your account
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4 px-0">
-                  <form className="space-y-4" onSubmit={handleRegisterSubmit}>
-                    {registerError && (
-                      <div className="p-3 bg-red-100 border border-red-400 text-red-700 rounded text-sm">
-                        {registerError}
-                      </div>
-                    )}
-
-                    <div className="space-y-2">
-                      <Label htmlFor="register-name">Full Name</Label>
-                      <Input
-                        id="register-name"
-                        name="name"
-                        type="text"
-                        placeholder="Enter your full name"
-                        value={registerData.name}
-                        onChange={handleRegisterChange}
-                        required
-                        disabled={isRegisterLoading}
-                        className="h-12"
-                      />
+          <TabsContent value="register">
+            <Card className="w-full border-white/10 shadow-xl bg-black/20 text-white rounded-2xl">
+              <CardHeader className="text-center">
+                <CardTitle className="text-2xl font-bold">
+                  Create an Account
+                </CardTitle>
+                <CardDescription className="text-gray-400">
+                  Enter your details to get started.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="px-6 pb-6">
+                <form className="space-y-4" onSubmit={handleRegisterSubmit}>
+                  {registerError && (
+                    <div className="p-3 bg-red-900/50 border border-red-500/50 text-red-300 rounded-lg text-sm">
+                      {registerError}
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="register-email">Email</Label>
-                      <Input
-                        id="register-email"
-                        name="email"
-                        type="email"
-                        placeholder="yourname@domain.com"
-                        value={registerData.email}
-                        onChange={handleRegisterChange}
-                        required
-                        disabled={isRegisterLoading}
-                        className="h-12"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="register-password">Password</Label>
-                      <div className="relative">
-                        <Input
-                          id="register-password"
-                          name="password"
-                          type={showRegisterPassword ? "text" : "password"}
-                          placeholder="Create a password"
-                          value={registerData.password}
-                          onChange={handleRegisterChange}
-                          required
-                          disabled={isRegisterLoading}
-                          className="h-12"
-                        />
-                        <PasswordToggle
-                          show={showRegisterPassword}
-                          onToggle={() => setShowRegisterPassword((s) => !s)}
-                        />
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="confirm-password">Confirm Password</Label>
-                      <div className="relative">
-                        <Input
-                          id="confirm-password"
-                          name="confirmPassword"
-                          type={showConfirmPassword ? "text" : "password"}
-                          placeholder="Confirm your password"
-                          value={registerData.confirmPassword}
-                          onChange={handleRegisterChange}
-                          required
-                          disabled={isRegisterLoading}
-                          className="h-12"
-                        />
-                        <PasswordToggle
-                          show={showConfirmPassword}
-                          onToggle={() => setShowConfirmPassword((s) => !s)}
-                        />
-                      </div>
-                    </div>
-                    <Button
-                      className="w-full h-12 mt-6 rounded-full bg-[#276266] hover:bg-[#16383a] cursor-pointer"
-                      type="submit"
+                  )}
+                  <div className="space-y-2">
+                    <Label htmlFor="register-name">Full Name</Label>
+                    <Input
+                      id="register-name"
+                      name="name"
+                      type="text"
+                      placeholder="Enter your full name"
+                      value={registerData.name}
+                      onChange={handleRegisterChange}
+                      required
                       disabled={isRegisterLoading}
-                    >
-                      {isRegisterLoading ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />{" "}
-                          Creating account...
-                        </>
-                      ) : (
-                        "Create account"
-                      )}
-                    </Button>
-                  </form>
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            <TabsContent value="login" className="mt-0">
-              <Card className="w-full border-0 shadow-none p-10 bg-[#101010] text-white">
-                <CardHeader className="space-y-1 px-0 ">
-                  <CardTitle className="text-2xl font-bold text-left">
-                    Login
-                  </CardTitle>
-                  <CardDescription className="text-left">
-                    Enter your email and password
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4 px-0">
-                  <form className="space-y-4" onSubmit={handleLoginSubmit}>
-                    {loginError && (
-                      <div className="p-3 bg-red-100 border border-red-400 text-red-700 rounded text-sm">
-                        {loginError}
-                      </div>
-                    )}
-                    <div className="space-y-2">
-                      <Label htmlFor="login-email">Email</Label>
+                      className="h-12 bg-black/30 border-white/20 focus:ring-[#276266] focus:border-[#276266]"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="register-email">Email</Label>
+                    <Input
+                      id="register-email"
+                      name="email"
+                      type="email"
+                      placeholder="yourname@domain.com"
+                      value={registerData.email}
+                      onChange={handleRegisterChange}
+                      required
+                      disabled={isRegisterLoading}
+                      className="h-12 bg-black/30 border-white/20 focus:ring-[#276266] focus:border-[#276266]"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="register-password">Password</Label>
+                    <div className="relative">
                       <Input
-                        id="login-email"
-                        name="email"
-                        type="email"
-                        placeholder="Enter your email"
-                        value={loginData.email}
+                        id="register-password"
+                        name="password"
+                        type={showRegisterPassword ? "text" : "password"}
+                        placeholder="Create a password"
+                        value={registerData.password}
+                        onChange={handleRegisterChange}
+                        required
+                        disabled={isRegisterLoading}
+                        className="h-12 bg-black/30 border-white/20 focus:ring-[#276266] focus:border-[#276266]"
+                      />
+                      <PasswordToggle
+                        show={showRegisterPassword}
+                        onToggle={() => setShowRegisterPassword((s) => !s)}
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="confirm-password">Confirm Password</Label>
+                    <div className="relative">
+                      <Input
+                        id="confirm-password"
+                        name="confirmPassword"
+                        type={showConfirmPassword ? "text" : "password"}
+                        placeholder="Confirm your password"
+                        value={registerData.confirmPassword}
+                        onChange={handleRegisterChange}
+                        required
+                        disabled={isRegisterLoading}
+                        className="h-12 bg-black/30 border-white/20 focus:ring-[#276266] focus:border-[#276266]"
+                      />
+                      <PasswordToggle
+                        show={showConfirmPassword}
+                        onToggle={() => setShowConfirmPassword((s) => !s)}
+                      />
+                    </div>
+                  </div>
+                  <Button
+                    className="w-full h-12 mt-6 rounded-lg bg-[#276266] hover:bg-[#1f4c4f] transition-colors"
+                    type="submit"
+                    disabled={isRegisterLoading}
+                  >
+                    {isRegisterLoading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Creating Account...
+                      </>
+                    ) : (
+                      "Create Account"
+                    )}
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="login">
+            <Card className="w-full border-white/10 shadow-xl bg-black/20 text-white rounded-2xl">
+              <CardHeader className="text-center">
+                <CardTitle className="text-2xl font-bold">
+                  Welcome Back
+                </CardTitle>
+                <CardDescription className="text-gray-400">
+                  Enter your credentials to log in.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="px-6 pb-6">
+                <form className="space-y-4" onSubmit={handleLoginSubmit}>
+                  {loginError && (
+                    <div className="p-3 bg-red-900/50 border border-red-500/50 text-red-300 rounded-lg text-sm">
+                      {loginError}
+                    </div>
+                  )}
+                  <div className="space-y-2">
+                    <Label htmlFor="login-email">Email</Label>
+                    <Input
+                      id="login-email"
+                      name="email"
+                      type="email"
+                      placeholder="Enter your email"
+                      value={loginData.email}
+                      onChange={handleLoginChange}
+                      required
+                      disabled={isLoginLoading}
+                      className="h-12 bg-black/30 border-white/20 focus:ring-[#276266] focus:border-[#276266]"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="login-password">Password</Label>
+                    <div className="relative">
+                      <Input
+                        id="login-password"
+                        name="password"
+                        type={showLoginPassword ? "text" : "password"}
+                        placeholder="Enter your password"
+                        value={loginData.password}
                         onChange={handleLoginChange}
                         required
                         disabled={isLoginLoading}
-                        className="h-12"
+                        className="h-12 bg-black/30 border-white/20 focus:ring-[#276266] focus:border-[#276266]"
+                      />
+                      <PasswordToggle
+                        show={showLoginPassword}
+                        onToggle={() => setShowLoginPassword((s) => !s)}
                       />
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="login-password">Password</Label>
-                      <div className="relative">
-                        <Input
-                          id="login-password"
-                          name="password"
-                          type={showLoginPassword ? "text" : "password"}
-                          placeholder="Enter your password"
-                          value={loginData.password}
-                          onChange={handleLoginChange}
-                          required
-                          disabled={isLoginLoading}
-                          className="h-12"
-                        />
-                        <PasswordToggle
-                          show={showLoginPassword}
-                          onToggle={() => setShowLoginPassword((s) => !s)}
-                        />
-                      </div>
-                    </div>
-                    <Button
-                      className="w-full h-12 mt-6 rounded-full bg-[#276266] hover:bg-[#16383a] cursor-pointer"
-                      type="submit"
-                      disabled={isLoginLoading}
-                    >
-                      {isLoginLoading ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />{" "}
-                          Logging in...
-                        </>
-                      ) : (
-                        "Login"
-                      )}
-                    </Button>
-                  </form>
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
-        </div>
+                  </div>
+                  <Button
+                    className="w-full h-12 mt-6 rounded-lg bg-[#276266] hover:bg-[#1f4c4f] transition-colors"
+                    type="submit"
+                    disabled={isLoginLoading}
+                  >
+                    {isLoginLoading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Logging In...
+                      </>
+                    ) : (
+                      "Login"
+                    )}
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );

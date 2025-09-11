@@ -138,24 +138,18 @@ const data = [
     src: "/logo1.jpeg",
     content: <DummyContent />,
   },
-  {
-    category: "Logistics Optimization",
-    title: "Smart Route Planning",
-    src: "/logo2.png",
-    content: <DummyContent />,
-  },
-  {
-    category: "Supply Chain",
-    title: "Real-time Inventory Management",
-    src: "/logo3.png",
-    content: <DummyContent />,
-  },
-  {
-    category: "Warehouse",
-    title: "Automated Warehouse Operations",
-    src: "/logo4.jpeg",
-    content: <DummyContent />,
-  },
+  // {
+  //   category: "Logistics Optimization",
+  //   title: "Smart Route Planning",
+  //   src: "/logo2.png",
+  //   content: <DummyContent />,
+  // },
+  // {
+  //   category: "Supply Chain",
+  //   title: "Real-time Inventory Management",
+  //   src: "/logo3.png",
+  //   content: <DummyContent />,
+  // },
   {
     category: "Performance",
     title: "Advanced Analytics Dashboard",
@@ -166,6 +160,12 @@ const data = [
     category: "Integration",
     title: "Seamless Platform Integration",
     src: "/logo6.jpeg",
+    content: <DummyContent />,
+  },
+  {
+    category: "Warehouse",
+    title: "Automated Warehouse Operations",
+    src: "/logo4.jpeg",
     content: <DummyContent />,
   },
 ];

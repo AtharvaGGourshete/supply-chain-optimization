@@ -380,42 +380,43 @@ export default function WarehouseSetupPage() {
   };
 
   // Add this function to your existing WarehouseSetupPage.jsx
-const handleAggregateSubmit = async () => {
-  if (!formData.salesCsv) {
-    setError("Please upload a CSV file");
-    return;
-  }
-
-  setIsLoading(true);
-  setError(null);
-
-  try {
-    const formDataToSend = new FormData();
-    formDataToSend.append("file", formData.salesCsv);
-
-    const response = await fetch("http://localhost:5000/forecast-aggregate-data", {
-      method: "POST",
-      body: formDataToSend,
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+  const handleAggregateSubmit = async () => {
+    if (!formData.salesCsv) {
+      setError("Please upload a CSV file");
+      return;
     }
 
-    const data = await response.json();
-    localStorage.setItem("aggregateForecastData", JSON.stringify(data));
-    localStorage.setItem("forecastType", "aggregate");
-    
-    navigate("/dashboard");
+    setIsLoading(true);
+    setError(null);
 
-  } catch (error) {
-    console.error("Error processing aggregate forecast:", error);
-    setError("Failed to process forecast. Please try again.");
-  } finally {
-    setIsLoading(false);
-  }
-};
+    try {
+      const formDataToSend = new FormData();
+      formDataToSend.append("file", formData.salesCsv);
 
+      const response = await fetch(
+        "http://localhost:5000/forecast-aggregate-data",
+        {
+          method: "POST",
+          body: formDataToSend,
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      localStorage.setItem("aggregateForecastData", JSON.stringify(data));
+      localStorage.setItem("forecastType", "aggregate");
+
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("Error processing aggregate forecast:", error);
+      setError("Failed to process forecast. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleForecast = async () => {
     const file = formData.salesCsv;
@@ -711,112 +712,161 @@ const handleAggregateSubmit = async () => {
                   </p>
                 )}
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-                <div className="space-y-2">
-                  <Tooltip>
-                    <Label
-                      htmlFor="serviceLevel"
-                      className="text-lg text-[#DDDBCB]"
-                    >
-                      Service Level (0.0 - 1.0)
-                      <Link to="/documentation">
-                      <TooltipTrigger>
-                        <Info className="w-3 h-3 cursor-pointer" />
-                      </TooltipTrigger>
-                      </Link>
-                      <TooltipContent>
-                        <p>Learn More</p>
-                      </TooltipContent>
-                    </Label>
-                    <Input
-                      id="serviceLevel"
-                      type="number"
-                      step="0.01"
-                      placeholder="e.g., 0.95"
-                      value={formData.serviceLevel}
-                      onChange={handleNumericChange("serviceLevel")}
-                      className={inputStyles}
-                    />
-                  </Tooltip>
-                </div>
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="leadTimeDays"
-                    className="text-lg text-[#DDDBCB]"
-                  >
-                    Lead Time (Days)
-                  </Label>
-                  <Input
-                    id="leadTimeDays"
-                    type="number"
-                    placeholder="e.g., 7"
-                    value={formData.leadTimeDays}
-                    onChange={handleNumericChange("leadTimeDays")}
-                    className={inputStyles}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="currentInventory"
-                    className="text-lg text-[#DDDBCB]"
-                  >
-                    Current On-Hand Inventory
-                  </Label>
-                  <Input
-                    id="currentInventory"
-                    type="number"
-                    placeholder="e.g., 250"
-                    value={formData.currentInventory}
-                    onChange={handleNumericChange("currentInventory")}
-                    className={inputStyles}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="orderingCost"
-                    className="text-lg text-[#DDDBCB]"
-                  >
-                    Ordering Cost
-                  </Label>
-                  <Input
-                    id="orderingCost"
-                    type="number"
-                    placeholder="e.g., 100"
-                    value={formData.orderingCost}
-                    onChange={handleNumericChange("orderingCost")}
-                    className={inputStyles}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="holdingCost"
-                    className="text-lg text-[#DDDBCB]"
-                  >
-                    Holding Cost
-                  </Label>
-                  <Input
-                    id="holdingCost"
-                    type="number"
-                    placeholder="e.g., 10"
-                    value={formData.holdingCost}
-                    onChange={handleNumericChange("holdingCost")}
-                    className={inputStyles}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="unitCost" className="text-lg text-[#DDDBCB]">
-                    Unit Cost
-                  </Label>
-                  <Input
-                    id="unitCost"
-                    type="number"
-                    placeholder="e.g., 50"
-                    value={formData.unitCost}
-                    onChange={handleNumericChange("unitCost")}
-                    className={inputStyles}
-                  />
-                </div>
-              </div>
+              // ... inside the 'case 3' return for 'single' analysis type ...
+
+<div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+  {/* Service Level */}
+  <div className="space-y-2">
+    <Tooltip>
+      <Label htmlFor="serviceLevel" className="text-lg text-[#DDDBCB] flex items-center">
+        Service Level (0.0 - 1.0)
+        <Link to="/documentation?highlight=serviceLevel" className="ml-2">
+          <TooltipTrigger>
+            <Info className="w-4 h-4 cursor-pointer text-gray-400 hover:text-white" />
+          </TooltipTrigger>
+        </Link>
+        <TooltipContent>
+          <p>Learn More</p>
+        </TooltipContent>
+      </Label>
+      <Input
+        id="serviceLevel"
+        type="number"
+        step="0.01"
+        placeholder="e.g., 0.95"
+        value={formData.serviceLevel}
+        onChange={handleNumericChange("serviceLevel")}
+        className={inputStyles}
+      />
+    </Tooltip>
+  </div>
+
+  {/* Lead Time */}
+  <div className="space-y-2">
+    <Tooltip>
+      <Label htmlFor="leadTimeDays" className="text-lg text-[#DDDBCB] flex items-center">
+        Lead Time (Days)
+        <Link to="/documentation?highlight=leadTime" className="ml-2">
+          <TooltipTrigger>
+            <Info className="w-4 h-4 cursor-pointer text-gray-400 hover:text-white" />
+          </TooltipTrigger>
+        </Link>
+        <TooltipContent>
+          <p>Learn More</p>
+        </TooltipContent>
+      </Label>
+      <Input
+        id="leadTimeDays"
+        type="number"
+        placeholder="e.g., 7"
+        value={formData.leadTimeDays}
+        onChange={handleNumericChange("leadTimeDays")}
+        className={inputStyles}
+      />
+    </Tooltip>
+  </div>
+
+  {/* Current On-Hand Inventory */}
+  <div className="space-y-2">
+    <Tooltip>
+      <Label htmlFor="currentInventory" className="text-lg text-[#DDDBCB] flex items-center">
+        Current On-Hand Inventory
+        <Link to="/documentation?highlight=currentInventory" className="ml-2">
+          <TooltipTrigger>
+            <Info className="w-4 h-4 cursor-pointer text-gray-400 hover:text-white" />
+          </TooltipTrigger>
+        </Link>
+        <TooltipContent>
+          <p>Learn More</p>
+        </TooltipContent>
+      </Label>
+      <Input
+        id="currentInventory"
+        type="number"
+        placeholder="e.g., 250"
+        value={formData.currentInventory}
+        onChange={handleNumericChange("currentInventory")}
+        className={inputStyles}
+      />
+    </Tooltip>
+  </div>
+
+  {/* Ordering Cost */}
+  <div className="space-y-2">
+    <Tooltip>
+      <Label htmlFor="orderingCost" className="text-lg text-[#DDDBCB] flex items-center">
+        Ordering Cost
+        <Link to="/documentation?highlight=orderingCost" className="ml-2">
+          <TooltipTrigger>
+            <Info className="w-4 h-4 cursor-pointer text-gray-400 hover:text-white" />
+          </TooltipTrigger>
+        </Link>
+        <TooltipContent>
+          <p>Learn More</p>
+        </TooltipContent>
+      </Label>
+      <Input
+        id="orderingCost"
+        type="number"
+        placeholder="e.g., 100"
+        value={formData.orderingCost}
+        onChange={handleNumericChange("orderingCost")}
+        className={inputStyles}
+      />
+    </Tooltip>
+  </div>
+
+  {/* Holding Cost */}
+  <div className="space-y-2">
+    <Tooltip>
+      <Label htmlFor="holdingCost" className="text-lg text-[#DDDBCB] flex items-center">
+        Holding Cost
+        <Link to="/documentation?highlight=holdingCost" className="ml-2">
+          <TooltipTrigger>
+            <Info className="w-4 h-4 cursor-pointer text-gray-400 hover:text-white" />
+          </TooltipTrigger>
+        </Link>
+        <TooltipContent>
+          <p>Learn More</p>
+        </TooltipContent>
+      </Label>
+      <Input
+        id="holdingCost"
+        type="number"
+        placeholder="e.g., 10"
+        value={formData.holdingCost}
+        onChange={handleNumericChange("holdingCost")}
+        className={inputStyles}
+      />
+    </Tooltip>
+  </div>
+
+  {/* Unit Cost */}
+  <div className="space-y-2">
+    <Tooltip>
+      <Label htmlFor="unitCost" className="text-lg text-[#DDDBCB] flex items-center">
+        Unit Cost
+        <Link to="/documentation?highlight=unitCost" className="ml-2">
+          <TooltipTrigger>
+            <Info className="w-4 h-4 cursor-pointer text-gray-400 hover:text-white" />
+          </TooltipTrigger>
+        </Link>
+        <TooltipContent>
+          <p>Learn More</p>
+        </TooltipContent>
+      </Label>
+      <Input
+        id="unitCost"
+        type="number"
+        placeholder="e.g., 50"
+        value={formData.unitCost}
+        onChange={handleNumericChange("unitCost")}
+        className={inputStyles}
+      />
+    </Tooltip>
+  </div>
+</div>
+
               <p className="text-center text-sm text-gray-400">
                 Ensure the file has columns for:{" "}
                 <strong className="text-white/80">ds</strong>,{" "}

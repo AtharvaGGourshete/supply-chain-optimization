@@ -8,6 +8,7 @@ import Dashboard from "./pages/Dashboard";
 import { Provider } from "react-redux";
 import { store } from "./app/store";
 import { Toaster } from "./components/ui/sonner";
+import Documentation from "./pages/Documentation";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
           <Route path="/warehouse" element={<WarehouseSetupPage />} />
           <Route path="/optimize-routes" element={<RouteOptimizationPage />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/documentation" element={<Documentation />} />
         </Routes>
       </Router>
       <Toaster richColors/>

@@ -90,6 +90,11 @@ const SleekNavbar = () => {
                     Route Optimization
                   </button>
                 </Link>
+                <Link to="/documentation">
+                  <button className="text-gray-700 hover:text-[#4c9197] px-3 py-2 text-lg font-medium transition-colors duration-200 cursor-pointer">
+                    Documentation
+                  </button>
+                </Link>
               </div>
             </div>
 

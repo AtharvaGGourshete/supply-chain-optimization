@@ -4,7 +4,7 @@ import Navbar from "@/components/Navbar";
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom"; // Import useNavigate
 import LogoLoop from "@/components/LogoLoop";
 import { AppleCardsCarouselDemo } from "@/components/appledemo";
 import "@fontsource/poppins/400.css";
@@ -13,8 +13,28 @@ import "@fontsource/poppins/600.css";
 import "@fontsource/poppins/700.css";
 import { useState, useEffect } from "react";
 import { Ripple } from "@/components/magicui/ripple";
+import { useLoginUserMutation } from "@/features/api/authApi";
+import { toast } from "sonner"; // Import toast
 
 const LandingPage = () => {
+  const navigate = useNavigate(); // Instantiate useNavigate
+  const [loginUser, { data, isSuccess }] = useLoginUserMutation();
+
+  // This handler can be attached to any login button or action you create
+  const loginHandler = async () => {
+    // Example with dummy credentials; replace with actual form data
+    const credentials = { email: "user@example.com", password: "password123" };
+    await loginUser(credentials);
+  };
+
+  // This useEffect will now run when the login is successful
+  useEffect(() => {
+    if (isSuccess) {
+      toast.success(data?.message || "Login Successful.");
+      navigate("/"); // Redirect to the home page or dashboard
+    }
+  }, [isSuccess, data, navigate]);
+
   // Data for the "How It Works" process cards
   const processSteps = [
     {
@@ -56,7 +76,7 @@ const LandingPage = () => {
           {/* Ripple Background */}
           <div className="absolute inset-0 z-10 flex items-center justify-center overflow-hidden w-full h-full mt-20">
             {/* The Ripple will be contained here, in the background */}
-            <Ripple/>
+            <Ripple />
           </div>
 
           {/* Main content */}

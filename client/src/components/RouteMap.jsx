@@ -145,7 +145,7 @@ const RouteMap = ({ routes, onReset }) => {
       />
       <Button
         onClick={onReset}
-        className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 bg-white hover:bg-gray-300 text-black cursor-pointer font-semibold "
+        className="relative mt-4 mb-20 z-10 bg-white hover:bg-gray-300 text-black cursor-pointer font-semibold border border-[#0A0A0A]/40"
       >
         Plan Another Route
       </Button>

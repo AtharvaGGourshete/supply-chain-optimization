@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import RouteForm from "@/components/RouteForm";
 import RouteMap from "@/components/RouteMap";
+import RouteInsights from "@/components/RouteInsights"; // Only added this import
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 
@@ -37,7 +38,7 @@ const RouteOptimizationPage = () => {
               </p>
             </>
           ) : (
-            <h1 className="text-4xl font-bold mb-6">Optimized Route</h1>
+            <h1 className="text-4xl font-bold mb-6 mt-20">Optimized Route</h1>
           )}
 
           {error && (
@@ -63,11 +64,14 @@ const RouteOptimizationPage = () => {
                 setLoading={setLoading}
               />
             ) : (
-              <RouteMap routes={routes} onReset={handleReset} />
+              <>
+                <RouteMap routes={routes} onReset={handleReset} />
+                {/* Only added this component under the map */}
+                <RouteInsights routes={routes} />
+              </>
             )}
           </div>
         </div>
-        
       </div>
       <Footer />
     </>
@@ -75,4 +79,3 @@ const RouteOptimizationPage = () => {
 };
 
 export default RouteOptimizationPage;
-  

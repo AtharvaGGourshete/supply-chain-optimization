@@ -14,10 +14,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
+import StaggeredMenu from "./staggeredNav";
 
 const SleekNavbar = () => {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
   const { user, isAuthenticated } = useSelector((store) => store.auth);
   const [logoutUser, { data, isSuccess }] = useLogoutUserMutation();
   const navigate = useNavigate();
@@ -33,13 +32,40 @@ const SleekNavbar = () => {
     }
   }, [isSuccess]);
 
+  // Menu items for StaggeredMenu with login integrated
+  const menuItems = [
+    { label: 'Home', ariaLabel: 'Go to home page', link: '/' },
+    { label: 'Warehouse', ariaLabel: 'Access warehouse management', link: '/warehouse' },
+    { label: 'Route Optimization', ariaLabel: 'Optimize your routes', link: '/optimize-routes' },
+    ...(isAuthenticated && user ? [
+      { label: 'Dashboard', ariaLabel: 'View dashboard', link: '/dashboard' },
+      { label: 'Profile', ariaLabel: 'Edit profile', link: '/profile' },
+      { 
+        label: 'Logout', 
+        ariaLabel: 'Logout from your account', 
+        onClick: logoutHandler
+      }
+    ] : [
+      { 
+        label: 'Login', 
+        ariaLabel: 'Login to your account', 
+        link: '/register'
+      }
+    ])
+  ];
+
+  const socialItems = [
+    { label: 'Twitter', link: 'https://twitter.com' },
+    { label: 'GitHub', link: 'https://github.com' },
+    { label: 'LinkedIn', link: 'https://linkedin.com' }
+  ];
+
   return (
-    
     <>
-    
       <nav className="fixed top-0 w-full z-50 backdrop-blur-xl bg-white/100 border-gray-200 p-2">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
+            {/* Logo - Left */}
             <div className="flex items-center">
               <Link to="/">
                 <img
@@ -51,14 +77,14 @@ const SleekNavbar = () => {
               <p className="text-2xl poppins font-semibold">ChainSaw</p>
             </div>
 
-            <div className="hidden md:block">
-              <div className="ml-10 flex items-baseline space-x-8">
+            {/* Navigation Links - Center (Desktop Only) */}
+            <div className="hidden lg:flex absolute left-1/2 transform -translate-x-1/2">
+              <div className="flex items-center space-x-8">
                 <Link to="/warehouse">
                   <button className="text-gray-700 hover:text-[#4c9197] px-3 py-2 text-lg font-medium transition-colors duration-200 cursor-pointer">
                     Warehouse
                   </button>
                 </Link>
-
                 <Link to="/optimize-routes">
                   <button className="text-gray-700 hover:text-[#4c9197] px-3 py-2 text-lg font-medium transition-colors duration-200 cursor-pointer">
                     Route Optimization
@@ -67,7 +93,8 @@ const SleekNavbar = () => {
               </div>
             </div>
 
-            <div className="flex items-center space-x-4">
+            {/* User Actions - Right (Desktop Only) */}
+            <div className="hidden lg:flex items-center space-x-4">
               {isAuthenticated && user ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -109,64 +136,41 @@ const SleekNavbar = () => {
                 <div className="flex items-center gap-2">
                   <Button
                     variant="outline"
-                    className="cursor-pointer bg-[#143234] text-white rounded-4xl h-10 w-20 border-yellow-400 hover:bg-green-600"
+                    className="cursor-pointer bg-[#143234] text-white rounded-4xl h-10 w-20 hover:bg-green-600"
                     onClick={() => navigate("/register")}
                   >
                     Login
                   </Button>
                 </div>
               )}
-
-              <button
-                onClick={() => setIsMobileMenuOpen((s) => !s)}
-                className="md:hidden p-2 text-gray-600 hover:text-gray-800 transition-colors duration-200"
-              >
-                <svg
-                  className="w-6 h-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  {isMobileMenuOpen ? (
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M6 18L18 6M6 6l12 12"
-                    ></path>
-                  ) : (
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M4 6h16M4 12h16M4 18h16"
-                    ></path>
-                  )}
-                </svg>
-              </button>
             </div>
           </div>
         </div>
-
-        {isMobileMenuOpen && (
-          <div className="md:hidden">
-            <div className="px-2 pt-2 pb-3 space-y-1 bg-yellow-50/95 border-t border-gray-200">
-              <Link to="/warehouse">
-                <a className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-yellow-600 hover:bg-yellow-100 rounded-md transition-colors duration-200">
-                  Warehouse
-                </a>
-              </Link>
-              <Link to="/optimize-routes">
-                <a className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-yellow-600 hover:bg-yellow-100 rounded-md transition-colors duration-200">
-                  Route Optimization
-                </a>
-              </Link>
-            </div>
-          </div>
-        )}
       </nav>
+
+      {/* StaggeredMenu - Fixed overlay for mobile/tablet only */}
+      <div className="lg:hidden fixed inset-0 z-50" style={{ pointerEvents: 'none' }}>
+        <StaggeredMenu
+          position="right"
+          items={menuItems}
+          socialItems={socialItems}
+          displaySocials={true}
+          displayItemNumbering={true}
+          menuButtonColor="#000000"
+          openMenuButtonColor="#fff"
+          changeMenuColorOnOpen={true}
+          colors={['#4c9197', '#143234']}
+          logoUrl="/shape.png"
+          accentColor="#4c9197"
+          onMenuOpen={() => console.log('Menu opened')}
+          onMenuClose={() => console.log('Menu closed')}
+        />
+      </div>
     </>
   );
 };
 
 export default SleekNavbar;
+
+
+

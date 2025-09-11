@@ -379,6 +379,44 @@ export default function WarehouseSetupPage() {
     }
   };
 
+  // Add this function to your existing WarehouseSetupPage.jsx
+const handleAggregateSubmit = async () => {
+  if (!formData.salesCsv) {
+    setError("Please upload a CSV file");
+    return;
+  }
+
+  setIsLoading(true);
+  setError(null);
+
+  try {
+    const formDataToSend = new FormData();
+    formDataToSend.append("file", formData.salesCsv);
+
+    const response = await fetch("http://localhost:5000/forecast-aggregate-data", {
+      method: "POST",
+      body: formDataToSend,
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    localStorage.setItem("aggregateForecastData", JSON.stringify(data));
+    localStorage.setItem("forecastType", "aggregate");
+    
+    navigate("/dashboard");
+
+  } catch (error) {
+    console.error("Error processing aggregate forecast:", error);
+    setError("Failed to process forecast. Please try again.");
+  } finally {
+    setIsLoading(false);
+  }
+};
+
+
   const handleForecast = async () => {
     const file = formData.salesCsv;
     if (!file) {

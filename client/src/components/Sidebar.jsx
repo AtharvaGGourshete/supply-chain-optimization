@@ -11,7 +11,7 @@ import {
 } from 'react-icons/fi';
 
 const Sidebar = () => (
-  <aside className="w-72 bg-[#143234]" aria-label="Sidebar">
+  <aside className="w-full h-full bg-[#143234]" aria-label="Sidebar">
     <div className="overflow-y-auto py-4 px-3  text-white rounded dark:bg-gray-800 h-full">
       <a href="/" className="flex items-center pl-2.5 mb-5">
         <span className="self-center text-xl font-semibold whitespace-nowrap dark:text-white">

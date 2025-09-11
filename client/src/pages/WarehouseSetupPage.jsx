@@ -697,7 +697,7 @@ export default function WarehouseSetupPage() {
                   Drag & drop your file here
                 </p>
                 <p className="text-gray-400">or</p>
-                <div className="relative inline-flex items-center justify-center h-10 px-4 py-2 mt-2 bg-secondary text-secondary-foreground hover:bg-secondary/80 w-40 rounded-md text-sm font-medium transition-colors">
+                <div className="relative inline-flex items-center justify-center h-10 px-4 py-2 mt-2 bg-[#1f2324] text-white hover:bg-white hover:text-black w-40 rounded-md text-sm font-medium transition-colors">
                   <span className="cursor-pointer">Choose a file</span>
                   <input
                     type="file"
@@ -897,7 +897,7 @@ export default function WarehouseSetupPage() {
                   Drag & drop your file here
                 </p>
                 <p className="text-gray-400">or</p>
-                <div className="relative inline-flex items-center justify-center h-10 px-4 py-2 mt-2 bg-secondary text-secondary-foreground hover:bg-secondary/80 w-40 rounded-md text-sm font-medium transition-colors">
+                <div className="relative inline-flex items-center justify-center h-10 px-4 py-2 mt-2 bg-[#1f2324] text-white hover:bg-white hover:text-black w-40 rounded-md text-sm font-medium transition-colors">
                   <span className="cursor-pointer">Choose a file</span>
                   <input
                     type="file"

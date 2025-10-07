@@ -1,46 +1,47 @@
+// server.js (UPDATED)
 import express from "express";
 import { connectDB } from "./config/db.js";
 import cors from 'cors'; 
+import cookieParser from 'cookie-parser'; // <--- NEW IMPORT
 import authRoutes from "./routes/auth.js";
 import forecastRoutes from "./routes/forecastRoutes.js"
 import optimizeRouter from "./routes/optimize.js"
 import userRoute from "./routes/user.js";
 import dotenv from 'dotenv';
 
+dotenv.config(); // <--- Moved to the top for consistency
 const app = express();
 
-// Middleware
+// --- MIDDLEWARE SETUP ---
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser()); // <--- NEW: Enable cookie parsing
+
+const PORT = process.env.PORT || 3000;
 
 const corsOptions = {
+    // Make sure your frontend URL is set in .env as CLIENT_URL
     origin: [
+        process.env.CLIENT_URL, 
         'http://localhost:5173', // Vite dev server
-        'http://localhost:3000', // In case you serve frontend from same port
-        'http://127.0.0.1:5173'  // Alternative localhost format
+        'http://127.0.0.1:5173'  // Alternative localhost format
     ],
-    credentials: true, // Allow cookies and authorization headers
+    credentials: true, // Crucial for sending/receiving HTTP-Only Cookies
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
 };
 
 app.use(cors(corsOptions));
 
-const PORT = 3000;
+// --- DB CONNECTION & ROUTES ---
+connectDB(); // Await is not necessary here if you don't await the connection result
 
-await connectDB();
-dotenv.config();
-
-// Routes
-app.use("/", authRoutes);
-
-// Forecasting and Optimization routes
-app.use("/api", forecastRoutes); // Handles aggregate and single-product forecasts
-
-// Optimize routes
+// Routes (Assuming your authRoutes points to the correct router containing /register, /login, /profile)
+app.use("/api/auth", authRoutes); // <--- Changed to /api/auth prefix for clarity
+app.use("/api", forecastRoutes);
 app.use('/api', optimizeRouter);
 app.use("/api", userRoute);
 
 app.listen(PORT, () => {
-  console.log(`Server is running on PORT ${PORT}`);
+  console.log(`Server is running on PORT ${PORT}`);
 });

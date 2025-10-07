@@ -1,11 +1,43 @@
+// controllers/authController.js (UPDATED)
 import User from "../models/users.js";
-import generateToken from "../utils/jwt.js";
-import {validationResult} from "express-validator";
+import { generateToken } from "../utils/jwt.js"; // Corrected import (generateToken is a named export)
+import { validationResult} from "express-validator";
+
+// Helper function to set the cookie
+const sendTokenResponse = (user, statusCode, message, res) => {
+    // Generate JWT token
+    const token = generateToken({ userId: user._id });
+
+    // Cookie options for HTTP-Only token
+    const options = {
+        expires: new Date(Date.now() + process.env.COOKIE_EXPIRE * 24 * 60 * 60 * 1000), // 7 days from .env
+        httpOnly: true, // Essential for security
+        secure: process.env.NODE_ENV === 'production', // Use secure in production
+        sameSite: 'Lax', // Good default for CSRF protection
+    };
+
+    // Remove password from response
+    const userResponse = {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role, // Assuming you might have roles later
+        // ... add other user fields you want on the frontend
+    };
+
+    // Set the cookie and send the JSON response
+    res.status(statusCode)
+        .cookie('token', token, options) // <--- SET HTTP-ONLY COOKIE HERE
+        .json({
+            success: true,
+            message,
+            user: userResponse,
+        });
+};
 
 // Register user
 export const register = async (req, res) => {
     try {
-        // Check validation errors
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({
@@ -17,7 +49,6 @@ export const register = async (req, res) => {
 
         const { name, email, password } = req.body;
 
-        // Check if user already exists
         const existingUser = await User.findOne({ email });
         if (existingUser) {
             return res.status(400).json({
@@ -26,29 +57,10 @@ export const register = async (req, res) => {
             });
         }
 
-        // Create new user
-        const user = await User.create({
-            name,
-            email,
-            password
-        });
+        const user = await User.create({ name, email, password });
 
-        // Generate JWT token
-        const token = generateToken({ userId: user._id });
-
-        // Remove password from response
-        const userResponse = {
-            id: user._id,
-            name: user.name,
-            email: user.email
-        };
-
-        res.status(201).json({
-            success: true,
-            message: 'User registered successfully',
-            user: userResponse,
-            token
-        });
+        // Use the helper to set cookie and send response
+        sendTokenResponse(user, 201, 'User registered successfully', res); 
 
     } catch (error) {
         console.error('Registration error:', error);
@@ -72,40 +84,17 @@ export const login = async (req, res) => {
         }
 
         const { email, password } = req.body;
-
-        // Find user by email
         const user = await User.findOne({ email });
-        if (!user) {
+
+        if (!user || !(await user.comparePassword(password))) {
             return res.status(401).json({
                 success: false,
                 message: 'Invalid credentials'
             });
         }
 
-        // Check password
-        const isPasswordValid = await user.comparePassword(password);
-        if (!isPasswordValid) {
-            return res.status(401).json({
-                success: false,
-                message: 'Invalid credentials'
-            });
-        }
-
-        // Generate JWT token
-        const token = generateToken({ userId: user._id });
-        // User response without password
-        const userResponse = {
-            id: user._id,
-            name: user.name,
-            email: user.email
-        };
-
-        res.status(200).json({
-            success: true,
-            message: 'Login successful',
-            user: userResponse,
-            token
-        });
+        // Use the helper to set cookie and send response
+        sendTokenResponse(user, 200, 'Login successful', res);
 
     } catch (error) {
         console.error('Login error:', error);
@@ -116,35 +105,44 @@ export const login = async (req, res) => {
     }
 };
 
-// Logout user (client-side token removal)
+// Logout user
 export const logout = (req, res) => {
+    // Clear the HTTP-Only cookie
+    res.cookie('token', 'none', {
+        expires: new Date(Date.now() + 10 * 1000), // Expire immediately (10s buffer)
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'Lax',
+    });
+
     res.status(200).json({
         success: true,
         message: 'Logout successful'
     });
 };
 
-
+// Get User Profile (protected by isAuthenticated middleware)
 export const getUserProfile = async (req,res) => {
-    try {
-        const userId = req.id;
-        const user = await User.findById(userId).select("-password");
-        if(!user){
-            return res.status(404).json({
-                message:"Profile not found",
-                success:false
-            })
-        }
-        return res.status(200).json({
-            success:true,
-            user
-        })
-    } catch (error) {
-        console.log(error);
-        return res.status(500).json({
-            success:false,
-            message:"Failed to load user"
-        })
-    }
-}
+    try {
+        // req.id is set by the isAuthenticated middleware
+        const userId = req.id; 
+        const user = await User.findById(userId).select("-password");
 
+        if(!user){
+            return res.status(404).json({
+                message:"Profile not found",
+                success:false
+            })
+        }
+        return res.status(200).json({
+            success:true,
+            user // The profile endpoint returns the user object directly under 'user' key
+        })
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            success:false,
+            message:"Failed to load user"
+        })
+    }
+}

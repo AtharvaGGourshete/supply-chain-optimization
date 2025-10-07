@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -21,13 +21,16 @@ import { toast } from "sonner"; // Import toast
 
 export default function RegisterPage() {
   const navigate = useNavigate();
+  // RTK Query hooks
   const [loginUser] = useLoginUserMutation();
   const [registerUser] = useRegisterUserMutation();
 
+  // State for password visibility
   const [showLoginPassword, setShowLoginPassword] = useState(false);
   const [showRegisterPassword, setShowRegisterPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+  // State for form data
   const [loginData, setLoginData] = useState({ email: "", password: "" });
   const [registerData, setRegisterData] = useState({
     name: "",
@@ -36,15 +39,18 @@ export default function RegisterPage() {
     confirmPassword: "",
   });
 
+  // State for loading and errors
   const [isLoginLoading, setIsLoginLoading] = useState(false);
   const [isRegisterLoading, setIsRegisterLoading] = useState(false);
   const [loginError, setLoginError] = useState("");
   const [registerError, setRegisterError] = useState("");
 
+  // Simple Frontend Validation Utilities
   const isStrongPassword = (password) =>
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/.test(password);
   const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
+  // --- Change Handlers ---
   const handleLoginChange = (e) => {
     const { name, value } = e.target;
     setLoginData((prev) => ({ ...prev, [name]: value }));
@@ -57,19 +63,45 @@ export default function RegisterPage() {
     if (registerError) setRegisterError("");
   };
 
+  // --- Submit Handlers ---
+
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
     setIsLoginLoading(true);
     setLoginError("");
+
     try {
       await loginUser({
         email: loginData.email,
         password: loginData.password,
       }).unwrap();
-      toast.success("Login successful! Redirecting...");
-      setTimeout(() => navigate("/"), 1200); // Allow time for toast
+      
+      toast.success("Login successful! Redirecting to Dashboard.");
+      setTimeout(() => navigate("/"), 1200);
+
     } catch (err) {
-      setLoginError(err?.data?.message || "Login failed");
+      let errorMessage = "Login failed. Please check your credentials.";
+
+      if (err?.data?.errors && Array.isArray(err.data.errors)) {
+        // Backend express-validator errors (e.g., missing field validation)
+        const combinedErrors = err.data.errors.map(e => e.msg).join(' | ');
+        toast.error(combinedErrors, { duration: 5000 });
+        setLoginError(err.data.errors[0].msg); // Set the first error for the red box
+
+      } else if (err?.data?.message) {
+        // Custom backend error (e.g., "Invalid credentials")
+        errorMessage = err.data.message;
+        toast.error(errorMessage);
+        setLoginError(errorMessage);
+      } else {
+        // Network/Server down error
+        toast.error(errorMessage);
+        setLoginError(errorMessage);
+      }
+      
+      // Clear password field for security and better UX on failure
+      setLoginData((prev) => ({ ...prev, password: "" }));
+
     } finally {
       setIsLoginLoading(false);
     }
@@ -80,44 +112,9 @@ export default function RegisterPage() {
     setIsRegisterLoading(true);
     setRegisterError("");
 
-    if (
-      !registerData.name ||
-      registerData.name.trim().length < 2 ||
-      registerData.name.trim().length > 50
-    ) {
-      setRegisterError("Full name must be between 2 and 50 characters long");
-      setIsRegisterLoading(false);
-      return;
-    }
-    if (!/^[a-zA-Z\s]+$/.test(registerData.name.trim())) {
-      setRegisterError("Full name can only contain letters and spaces");
-      setIsRegisterLoading(false);
-      return;
-    }
-    if (!registerData.email || !isValidEmail(registerData.email)) {
-      setRegisterError("Please provide a valid email address");
-      setIsRegisterLoading(false);
-      return;
-    }
-    if (registerData.email.length > 100) {
-      setRegisterError("Email must not exceed 100 characters");
-      setIsRegisterLoading(false);
-      return;
-    }
+    // Quick frontend check for password match (best practice UX)
     if (registerData.password !== registerData.confirmPassword) {
       setRegisterError("Passwords do not match");
-      setIsRegisterLoading(false);
-      return;
-    }
-    if (registerData.password.length < 6) {
-      setRegisterError("Password must be at least 6 characters long");
-      setIsRegisterLoading(false);
-      return;
-    }
-    if (!isStrongPassword(registerData.password)) {
-      setRegisterError(
-        "Password must contain at least one uppercase letter, one lowercase letter, and one number"
-      );
       setIsRegisterLoading(false);
       return;
     }
@@ -128,19 +125,39 @@ export default function RegisterPage() {
         email: registerData.email,
         password: registerData.password,
       }).unwrap();
-      toast.success("Registration successful! Redirecting...");
-      setTimeout(() => navigate("/"), 1200); // Allow time for toast
+      
+      toast.success("Registration successful! Redirecting to Dashboard.");
+      setTimeout(() => navigate("/"), 1200);
+
     } catch (err) {
-      const msg =
-        (Array.isArray(err?.data?.errors) && err.data.errors?.msg) ||
-        err?.data?.message ||
-        "Registration failed";
-      setRegisterError(msg);
+      let errorMessage = "Registration failed. Please try again.";
+
+      if (err?.data?.errors && Array.isArray(err.data.errors)) {
+        // Backend express-validator errors (multiple field errors)
+        const combinedErrors = err.data.errors.map(e => e.msg).join(' | ');
+        toast.error("Validation failed. Check below for details.", {
+            description: combinedErrors,
+            duration: 5000,
+        });
+        setRegisterError(err.data.errors[0].msg); // Set the first error for the red box
+
+      } else if (err?.data?.message) {
+        // Custom backend error (e.g., "User already exists with this email")
+        errorMessage = err.data.message;
+        toast.error(errorMessage);
+        setRegisterError(errorMessage);
+      } else {
+        // Network/Server down error
+        toast.error(errorMessage);
+        setRegisterError(errorMessage);
+      }
+
     } finally {
       setIsRegisterLoading(false);
     }
   };
 
+  // --- Utility Component for Password Toggle ---
   const PasswordToggle = ({ show, onToggle }) => (
     <Button
       type="button"
@@ -153,6 +170,7 @@ export default function RegisterPage() {
     </Button>
   );
 
+  // --- JSX Rendering ---
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#143234] p-4">
       <div className="absolute inset-0 z-0 w-full h-full pointer-events-none">
@@ -189,7 +207,8 @@ export default function RegisterPage() {
                 <form className="space-y-4" onSubmit={handleRegisterSubmit}>
                   {registerError && (
                     <div className="p-3 bg-red-900/50 border border-red-500/50 text-red-300 rounded-lg text-sm">
-                      {registerError}
+                      {/* Note: This displays only the first error for visual clarity */}
+                      {registerError} 
                     </div>
                   )}
                   <div className="space-y-2">

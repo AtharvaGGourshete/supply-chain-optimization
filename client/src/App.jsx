@@ -9,9 +9,10 @@ import { Provider } from "react-redux";
 import { store } from "./app/store";
 import { Toaster } from "./components/ui/sonner";
 import Documentation from "./pages/Documentation";
-import ProtectedRoute from "./components/ProtectedRoute"; // <--- NEW IMPORT
-import { useLoadUserQuery } from "./features/api/authApi"; // <--- NEW IMPORT
+import ProtectedRoute from "./components/ProtectedRoute";
+import { useLoadUserQuery } from "./features/api/authApi"; 
 import Profile from "./pages/Profile";
+import SupplierSelection from './pages/SupplierSelectionPage';
 
 // Component to handle initial user loading/session check
 const AppContent = () => {
@@ -41,7 +42,7 @@ const AppContent = () => {
                 <Route path="/optimize-routes" element={<RouteOptimizationPage />} />
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/profile" element={<Profile />} />
-                {/* Add /profile route here if needed */}
+                <Route path="/supplier-selection" element={<SupplierSelection />} />
             </Route>
         </Routes>
     );
@@ -49,14 +50,14 @@ const AppContent = () => {
 
 
 function App() {
-  return (
-    <Provider store={store}>
-      <Router>
-        <AppContent /> {/* Render the main content wrapper */}
-      </Router>
-      <Toaster richColors/>
-    </Provider>
-  );
+return (
+    <Provider store={store}>
+        <Router>
+            <AppContent /> {/* Render the main content wrapper */}
+        </Router>
+        <Toaster richColors/>
+    </Provider>
+);
 }
 
 export default App;

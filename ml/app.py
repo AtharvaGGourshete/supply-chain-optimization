@@ -1,13 +1,15 @@
 import os
 import logging
+import math
 import joblib
 import pandas as pd
+import numpy as np
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from prophet import Prophet
 from scipy.stats import norm
-import numpy as np
-import math
+from sklearn.preprocessing import MinMaxScaler
+import json
 
 # Initialize Flask app and enable CORS
 app = Flask(__name__)
@@ -262,6 +264,158 @@ def forecast_aggregate_data():
     except Exception as e:
         logger.error(f"Error in aggregate forecast: {e}")
         return jsonify({"error": str(e)}), 500
+
+@app.route("/evaluate-suppliers", methods=["POST"])
+def evaluate_suppliers():
+    """
+    Evaluate and rank suppliers based on multiple criteria using weighted scoring.
+    Expects CSV file with supplier data and weights as form data.
+    """
+    try:
+        file = request.files["file"]
+        weights_json = request.form.get("weights", "{}")
+        weights = json.loads(weights_json)
+        
+        # Read supplier CSV data
+        df = pd.read_csv(file)
+        
+        # Validate required columns
+        required_cols = ['supplier_id', 'supplier_name', 'unit_price', 'on_time_delivery_rate', 
+                        'avg_lead_time', 'quality_rating', 'defect_rate', 'distance_km']
+        missing_cols = [col for col in required_cols if col not in df.columns]
+        if missing_cols:
+            return jsonify({"error": f"Missing columns: {missing_cols}"}), 400
+        
+        # Default weights if not provided
+        default_weights = {
+            'cost': 0.3,
+            'reliability': 0.25, 
+            'quality': 0.2,
+            'lead_time': 0.15,
+            'location': 0.1
+        }
+        weights = {**default_weights, **weights}
+        
+        # Normalize weights to sum to 1
+        total_weight = sum(weights.values())
+        weights = {k: v/total_weight for k, v in weights.items()}
+        
+        # Calculate scores for each supplier
+        suppliers_scored = []
+        
+        # Get max/min values for normalization
+        max_price = df['unit_price'].max()
+        min_price = df['unit_price'].min()
+        max_lead_time = df['avg_lead_time'].max()
+        min_lead_time = df['avg_lead_time'].min()
+        max_distance = df['distance_km'].max()
+        min_distance = df['distance_km'].min()
+        max_defect = df['defect_rate'].max()
+        min_defect = df['defect_rate'].min()
+        
+        for _, supplier in df.iterrows():
+            # Calculate individual scores (0-100 scale, higher is better)
+            
+            # Cost Score: Lower price = higher score
+            if max_price != min_price:
+                cost_score = 100 - ((supplier['unit_price'] - min_price) / (max_price - min_price) * 100)
+            else:
+                cost_score = 100
+            
+            # Reliability Score: Already in percentage
+            reliability_score = supplier['on_time_delivery_rate']
+            
+            # Quality Score: Higher rating = higher score, Lower defects = higher score
+            quality_from_rating = (supplier['quality_rating'] / 5.0) * 50  # Assuming 5-point scale
+            if max_defect != min_defect:
+                quality_from_defects = 50 - ((supplier['defect_rate'] - min_defect) / (max_defect - min_defect) * 50)
+            else:
+                quality_from_defects = 50
+            quality_score = quality_from_rating + quality_from_defects
+            
+            # Lead Time Score: Lower lead time = higher score
+            if max_lead_time != min_lead_time:
+                lead_time_score = 100 - ((supplier['avg_lead_time'] - min_lead_time) / (max_lead_time - min_lead_time) * 100)
+            else:
+                lead_time_score = 100
+            
+            # Location Score: Closer distance = higher score
+            if max_distance != min_distance:
+                location_score = 100 - ((supplier['distance_km'] - min_distance) / (max_distance - min_distance) * 100)
+            else:
+                location_score = 100
+            
+            # Calculate weighted total score
+            total_score = (
+                cost_score * weights['cost'] +
+                reliability_score * weights['reliability'] +
+                quality_score * weights['quality'] +
+                lead_time_score * weights['lead_time'] +
+                location_score * weights['location']
+            )
+            
+            # Determine recommendation
+            if total_score >= 80:
+                recommendation = "Highly Recommended"
+                recommendation_color = "green"
+            elif total_score >= 65:
+                recommendation = "Recommended" 
+                recommendation_color = "yellow"
+            elif total_score >= 50:
+                recommendation = "Consider"
+                recommendation_color = "orange"
+            else:
+                recommendation = "Not Recommended"
+                recommendation_color = "red"
+            
+            suppliers_scored.append({
+                'supplier_id': supplier['supplier_id'],
+                'supplier_name': supplier['supplier_name'],
+                'total_score': round(total_score, 2),
+                'cost_score': round(cost_score, 2),
+                'reliability_score': round(reliability_score, 2),
+                'quality_score': round(quality_score, 2),
+                'lead_time_score': round(lead_time_score, 2),
+                'location_score': round(location_score, 2),
+                'recommendation': recommendation,
+                'recommendation_color': recommendation_color,
+                'unit_price': supplier['unit_price'],
+                'on_time_delivery_rate': supplier['on_time_delivery_rate'],
+                'avg_lead_time': supplier['avg_lead_time'],
+                'quality_rating': supplier['quality_rating'],
+                'distance_km': supplier['distance_km']
+            })
+        
+        # Sort by total score (highest first)
+        suppliers_scored.sort(key=lambda x: x['total_score'], reverse=True)
+        
+        # Add ranking
+        for i, supplier in enumerate(suppliers_scored):
+            supplier['rank'] = i + 1
+        
+        return jsonify({
+            'suppliers': suppliers_scored,
+            'weights_used': weights,
+            'total_suppliers': len(suppliers_scored)
+        })
+        
+    except Exception as e:
+        logger.error(f"Error in supplier evaluation: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+# Optional: Save supplier evaluation results
+@app.route("/save-supplier-evaluation", methods=["POST"])
+def save_supplier_evaluation():
+    """Save supplier evaluation results for future reference"""
+    try:
+        evaluation_data = request.json
+        # Here you would save to your database
+        # For now, just return success
+        return jsonify({"message": "Evaluation saved successfully"})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))

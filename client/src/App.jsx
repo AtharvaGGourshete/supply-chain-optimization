@@ -11,6 +11,7 @@ import { Toaster } from "./components/ui/sonner";
 import Documentation from "./pages/Documentation";
 import ProtectedRoute from "./components/ProtectedRoute"; // <--- NEW IMPORT
 import { useLoadUserQuery } from "./features/api/authApi"; // <--- NEW IMPORT
+import Profile from "./pages/Profile";
 
 // Component to handle initial user loading/session check
 const AppContent = () => {
@@ -39,6 +40,7 @@ const AppContent = () => {
                 <Route path="/warehouse" element={<WarehouseSetupPage />} />
                 <Route path="/optimize-routes" element={<RouteOptimizationPage />} />
                 <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/profile" element={<Profile />} />
                 {/* Add /profile route here if needed */}
             </Route>
         </Routes>

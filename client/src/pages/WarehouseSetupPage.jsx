@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useRunSingleForecastMutation, useRunAggregateForecastMutation } from "../features/api/analysisApi";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
@@ -7,7 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, ArrowRight, Upload, AlertCircle } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { ArrowLeft, ArrowRight, Upload, AlertCircle, Info } from "lucide-react";
 import { ScaleLoader } from "react-spinners";
 
 const Stepper = ({ currentStep, steps }) => (
@@ -151,23 +152,45 @@ export default function WarehouseSetupPage() {
       </div>
     );  // basic uploader UI [web:42]
 
-    const NumericField = ({ id, label, placeholder, step, value }) => (
-      <div className="space-y-2">
-        <Label htmlFor={id} className={labelStyles}>
+    const NumericField = ({ id, label, placeholder, step, value, docKey }) => {
+      const labelNode = (
+        <>
           {label}
-        </Label>
-        <Input
-          id={id}
-          type="number"
-          inputMode="decimal"
-          step={step}
-          placeholder={placeholder}
-          value={value}
-          onChange={handleNumericChange(id)}
-          className={inputStyles}
-        />
-      </div>
-    );  // numeric inputs for single-product params [web:32]
+          {docKey && (
+            <Link to={`/documentation?highlight=${docKey}`} className="ml-2">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button type="button" aria-label={`Learn more about ${label}`} className="ml-2">
+                    <Info className="w-4 h-4 text-gray-500 hover:text-gray-700" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Learn more</p>
+                </TooltipContent>
+              </Tooltip>
+            </Link>
+          )}
+        </>
+      );
+
+      return (
+        <div className="space-y-2">
+          <Label htmlFor={id} className={labelStyles}>
+            {labelNode}
+          </Label>
+          <Input
+            id={id}
+            type="number"
+            inputMode="decimal"
+            step={step}
+            placeholder={placeholder}
+            value={value}
+            onChange={handleNumericChange(id)}
+            className={inputStyles}
+          />
+        </div>
+      );
+    };  // numeric inputs for single-product params with optional tooltip/link
 
     switch (step) {
       case 1:
@@ -257,18 +280,18 @@ export default function WarehouseSetupPage() {
             />
             {formData.analysisType === "single" && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-                <NumericField id="serviceLevel" label="Service Level (0.0 - 1.0)" placeholder="e.g., 0.95" step="0.01" value={formData.serviceLevel} />
-                <NumericField id="leadTimeDays" label="Lead Time (Days)" placeholder="e.g., 7" value={formData.leadTimeDays} />
-                <NumericField id="currentInventory" label="Current On‑Hand Inventory" placeholder="e.g., 250" value={formData.currentInventory} />
-                <NumericField id="orderingCost" label="Ordering Cost" placeholder="e.g., 100" value={formData.orderingCost} />
-                <NumericField id="holdingCost" label="Holding Cost" placeholder="e.g., 10" value={formData.holdingCost} />
-                <NumericField id="unitCost" label="Unit Cost" placeholder="e.g., 50" value={formData.unitCost} />
+                <NumericField id="serviceLevel" label="Service Level (0.0 - 1.0)" placeholder="e.g., 0.95" step="0.01" value={formData.serviceLevel} docKey="serviceLevel" />
+                <NumericField id="leadTimeDays" label="Lead Time (Days)" placeholder="e.g., 7" value={formData.leadTimeDays} docKey="leadTime" />
+                <NumericField id="currentInventory" label="Current On-Hand Inventory" placeholder="e.g., 250" value={formData.currentInventory} docKey="currentInventory" />
+                <NumericField id="orderingCost" label="Ordering Cost" placeholder="e.g., 100" value={formData.orderingCost} docKey="orderingCost" />
+                <NumericField id="holdingCost" label="Holding Cost" placeholder="e.g., 10" value={formData.holdingCost} docKey="holdingCost" />
+                <NumericField id="unitCost" label="Unit Cost" placeholder="e.g., 50" value={formData.unitCost} docKey="unitCost" />
               </div>
             )}
           </div>
-        );  // step 3 upload + numeric params [web:42]
+        ); 
       default:
-        return null;  // default guard [web:32]
+        return null; 
     }
   };
 

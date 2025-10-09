@@ -8,8 +8,9 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeft, ArrowRight, Upload, AlertCircle } from "lucide-react";
+import { ScaleLoader } from "react-spinners";
 
-// Stepper component with the new white and green theme
+// Stepper component remains the same
 const Stepper = ({ currentStep, steps }) => (
     <div className="flex items-center justify-center w-full">
     {steps.map((step, index) => {
@@ -43,6 +44,7 @@ const Stepper = ({ currentStep, steps }) => (
     </div>
 );
 
+
 export default function WarehouseSetupPage() {
     const [step, setStep] = useState(1);
     const [formData, setFormData] = useState({
@@ -59,12 +61,47 @@ export default function WarehouseSetupPage() {
     
     const loading = isSingleLoading || isAggregateLoading;
 
-    // All functional logic (handlers, etc.) remains the same
     const handleInputChange = (e) => setFormData((prev) => ({ ...prev, [e.target.id]: e.target.value }));
     const handleSelectChange = (value, id) => setFormData((prev) => ({ ...prev, [id]: value }));
     const handleFileChange = (event) => setFormData((prev) => ({ ...prev, salesCsv: event.target.files[0] }));
-    const handleNumericChange = (id) => (e) => { /* ... */ };
-    const handleForecast = async () => { /* ... */ };
+    
+    // --- FIX IS HERE: Implemented the handleForecast function ---
+    const handleForecast = async () => {
+        if (!formData.salesCsv) {
+            setError("Please upload a sales data CSV file.");
+            return;
+        }
+        setError(""); // Clear previous errors
+
+        const payload = new FormData();
+        payload.append("file", formData.salesCsv);
+        
+        // Append other relevant parameters for the backend
+        const parameters = {
+            serviceLevel: formData.serviceLevel,
+            leadTimeDays: formData.leadTimeDays,
+            currentInventory: formData.currentInventory,
+            orderingCost: formData.orderingCost,
+            holdingCost: formData.holdingCost,
+            unitCost: formData.unitCost,
+        };
+        payload.append("parameters", JSON.stringify(parameters));
+        
+        try {
+            if (formData.analysisType === 'single') {
+                // Use .unwrap() to get the actual response or throw an error
+                await runSingleForecast(payload).unwrap();
+            } else if (formData.analysisType === 'aggregate') {
+                await runAggregateForecast(payload).unwrap();
+            }
+            
+            // On success, navigate to the dashboard
+            navigate('/dashboard');
+        } catch (err) {
+            // Set error message from backend response or a generic fallback
+            setError(err.data?.message || "Analysis failed. Please check your data and try again.");
+        }
+    };
 
     const renderStepContent = () => {
         const inputStyles = "bg-white border-gray-300 text-gray-800 focus:ring-2 focus:ring-green-500 focus:border-green-500 h-12 text-base rounded-lg";
@@ -110,7 +147,7 @@ export default function WarehouseSetupPage() {
                     return (
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <Button variant="outline" className="h-48 border-gray-300 text-gray-800 hover:bg-green-600 hover:text-white hover:border-green-600 font-semibold text-xl flex flex-col justify-center items-center" onClick={() => setFormData((prev) => ({ ...prev, analysisType: "single" }))}><span>Single Product</span><span className="text-sm font-normal text-gray-500 mt-2">Optimize a single item.</span></Button>
-                            <Button variant="outline" className="h-48 border-gray-300 text-gray-800 hover:bg-green-600 hover:text-white hover:border-green-600 font-semibold text-xl flex flex-col justify-center items-center" onClick={() => setFormData((prev) => ({ ...prev, analysisType: "aggregate" }))}><span>Aggregate Business</span><span className="text-sm font-normal text-gray-500 mt-2">Get high-level predictions.</span></Button>
+                            <Button variant="outline" className="h-48 border-gray-300 text-gray-800 hover:bg-green-600 hover:text-white hover:border-green-600 font-semibold text-xl flex flex-col justify-center items-center" onClick={() => setFormData((prev) => ({ ...prev, analysisType: "aggregate" }))}><span>Aggregate Business</span><span className="text-sm font-normal text-black-500 mt-2">Get high-level predictions.</span></Button>
                         </div>
                     );
                 }
@@ -159,11 +196,19 @@ export default function WarehouseSetupPage() {
                             </div>
                             <div>
                                 {(step < 3 || (step === 3 && formData.analysisType)) && (
-                                    <Button size="lg" className="bg-green-600 hover:bg-green-700 text-white font-bold cursor-pointer h-12 px-8"
+                                    <Button
+                                        size="lg"
+                                        className="bg-green-600 hover:bg-green-700 text-white font-bold cursor-pointer h-12 px-8 flex items-center justify-center min-w-[180px]"
                                         onClick={() => (step === 3 ? handleForecast() : setStep(step + 1))}
                                         disabled={loading}>
-                                        {loading ? "Processing..." : step === 3 ? "Run Analysis" : "Next Step"}
-                                        {!loading && <ArrowRight className="ml-2 h-5 w-5" />}
+                                        {loading ? (
+                                            <ScaleLoader color={"#ffffff"} height={20} />
+                                        ) : (
+                                            <>
+                                                {step === 3 ? "Run Analysis" : "Next Step"}
+                                                <ArrowRight className="ml-2 h-5 w-5" />
+                                            </>
+                                        )}
                                     </Button>
                                 )}
                             </div>

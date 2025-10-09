@@ -1,10 +1,13 @@
+// path: server/routes/userRoutes.js
 import express from 'express';
-import { getUserProfile } from '../controllers/userController.js';
+import { getUserProfile, updateUserProfile } from '../controllers/userController.js';
 import isAuthenticated from '../middlewares/isAuthenticated.js';
 
 const router = express.Router();
 
-// Defines the GET endpoint for /api/users/profile
-router.get('/profile', isAuthenticated, getUserProfile);
+// Chain the GET and PUT methods for the same '/profile' route
+router.route('/profile')
+    .get(isAuthenticated, getUserProfile)
+    .put(isAuthenticated, updateUserProfile);
 
 export default router;

@@ -70,7 +70,7 @@ const LandingPage = () => {
   return (
     <>
       <Navbar />
-      <main className="bg-gray-50 text-gray-800 font-poppins">
+      <main className="bg-gray-50 text-gray-800 font-poppins overflow-y-hidden">
         {/* Hero Section */}
         <section className="relative min-h-screen flex items-center justify-center py-20 bg-white/100 overflow-hidden">
           {/* Ripple Background */}

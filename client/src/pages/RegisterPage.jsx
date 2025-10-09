@@ -19,6 +19,14 @@ import {
 import Glow from "@/components/ui/glow";
 import { toast } from "sonner"; // Import toast
 
+// --- THEME COLORS ---
+// Primary Green: #4CAF50 (or a darker, more vibrant green like #009688 if preferred)
+const PRIMARY_GREEN = "bg-[#4CAF50] hover:bg-[#388E3C]"; // A fresh, modern green
+const ACTIVE_GREEN = "data-[state=active]:bg-[#4CAF50] data-[state=active]:text-white";
+const FOCUS_GREEN = "focus:ring-[#4CAF50] focus:border-[#4CAF50]";
+const BORDER_COLOR = "border-gray-200"; // Light border for inputs and cards
+// ---
+
 export default function RegisterPage() {
   const navigate = useNavigate();
   // RTK Query hooks
@@ -76,20 +84,20 @@ export default function RegisterPage() {
         password: loginData.password,
       }).unwrap();
       
-      toast.success("Login successful! Redirecting to Dashboard.");
+      toast.success("Login successful.");
       setTimeout(() => navigate("/"), 1200);
 
     } catch (err) {
       let errorMessage = "Login failed. Please check your credentials.";
 
       if (err?.data?.errors && Array.isArray(err.data.errors)) {
-        // Backend express-validator errors (e.g., missing field validation)
+        // Backend express-validator errors
         const combinedErrors = err.data.errors.map(e => e.msg).join(' | ');
         toast.error(combinedErrors, { duration: 5000 });
-        setLoginError(err.data.errors[0].msg); // Set the first error for the red box
+        setLoginError(err.data.errors[0].msg); 
 
       } else if (err?.data?.message) {
-        // Custom backend error (e.g., "Invalid credentials")
+        // Custom backend error 
         errorMessage = err.data.message;
         toast.error(errorMessage);
         setLoginError(errorMessage);
@@ -126,7 +134,7 @@ export default function RegisterPage() {
         password: registerData.password,
       }).unwrap();
       
-      toast.success("Registration successful! Redirecting to Dashboard.");
+      toast.success("Registration successful.");
       setTimeout(() => navigate("/"), 1200);
 
     } catch (err) {
@@ -139,7 +147,7 @@ export default function RegisterPage() {
             description: combinedErrors,
             duration: 5000,
         });
-        setRegisterError(err.data.errors[0].msg); // Set the first error for the red box
+        setRegisterError(err.data.errors[0].msg); 
 
       } else if (err?.data?.message) {
         // Custom backend error (e.g., "User already exists with this email")
@@ -163,7 +171,8 @@ export default function RegisterPage() {
       type="button"
       variant="ghost"
       size="sm"
-      className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent text-gray-400 hover:text-white"
+      // Updated class names for light theme (dark icons/text, transparent background)
+      className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-gray-100 text-gray-500 hover:text-gray-900"
       onClick={onToggle}
     >
       {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -172,42 +181,51 @@ export default function RegisterPage() {
 
   // --- JSX Rendering ---
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#143234] p-4">
-      <div className="absolute inset-0 z-0 w-full h-full pointer-events-none">
+    // Main background is white, so the text and components will stand out naturally
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4 font-poppins">
+      {/* <div className="absolute inset-0 z-0 w-full h-full pointer-events-none">
         <Glow variant="top" intensity="high" />
-      </div>
+      </div> */}
       <div className="relative z-10 w-full max-w-md space-y-8">
         <Tabs defaultValue="register" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-4 rounded-xl bg-black/20 border border-white/10 p-1">
+          <TabsList 
+            // Updated TabsList for a light theme: subtle background, dark text
+            className={`grid w-full grid-cols-2 mb-4 rounded-xl bg-gray-100 ${BORDER_COLOR} border p-1`}
+          >
             <TabsTrigger
               value="register"
-              className="cursor-pointer rounded-lg data-[state=active]:bg-[#276266] data-[state=active]:text-white text-gray-300"
+              // Updated TabsTrigger for light theme: dark text, green active background
+              className={`cursor-pointer rounded-lg ${ACTIVE_GREEN} text-gray-700`}
             >
               Register
             </TabsTrigger>
             <TabsTrigger
               value="login"
-              className="cursor-pointer rounded-lg data-[state=active]:bg-[#276266] data-[state=active]:text-white text-gray-300"
+              // Updated TabsTrigger for light theme: dark text, green active background
+              className={`cursor-pointer rounded-lg ${ACTIVE_GREEN} text-gray-700`}
             >
               Login
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="register">
-            <Card className="w-full border-white/10 shadow-xl bg-black/20 text-white rounded-2xl">
+            <Card 
+              // Card styles updated for light theme: white background, subtle shadow/border
+              className={`w-full ${BORDER_COLOR} border shadow-lg bg-white text-gray-900 rounded-2xl`}
+            >
               <CardHeader className="text-center">
                 <CardTitle className="text-2xl font-bold">
                   Create an Account
                 </CardTitle>
-                <CardDescription className="text-gray-400">
+                <CardDescription className="text-gray-600">
                   Enter your details to get started.
                 </CardDescription>
               </CardHeader>
               <CardContent className="px-6 pb-6">
                 <form className="space-y-4" onSubmit={handleRegisterSubmit}>
                   {registerError && (
-                    <div className="p-3 bg-red-900/50 border border-red-500/50 text-red-300 rounded-lg text-sm">
-                      {/* Note: This displays only the first error for visual clarity */}
+                    // Error box updated for better visibility on a light background
+                    <div className="p-3 bg-red-100 border border-red-500 text-red-700 rounded-lg text-sm">
                       {registerError} 
                     </div>
                   )}
@@ -222,7 +240,8 @@ export default function RegisterPage() {
                       onChange={handleRegisterChange}
                       required
                       disabled={isRegisterLoading}
-                      className="h-12 bg-black/30 border-white/20 focus:ring-[#276266] focus:border-[#276266]"
+                      // Input updated for light theme: white background, light border, green focus
+                      className={`h-12 bg-white ${BORDER_COLOR} border ${FOCUS_GREEN}`}
                     />
                   </div>
                   <div className="space-y-2">
@@ -236,7 +255,8 @@ export default function RegisterPage() {
                       onChange={handleRegisterChange}
                       required
                       disabled={isRegisterLoading}
-                      className="h-12 bg-black/30 border-white/20 focus:ring-[#276266] focus:border-[#276266]"
+                      // Input updated for light theme: white background, light border, green focus
+                      className={`h-12 bg-white ${BORDER_COLOR} border ${FOCUS_GREEN}`}
                     />
                   </div>
                   <div className="space-y-2">
@@ -251,7 +271,8 @@ export default function RegisterPage() {
                         onChange={handleRegisterChange}
                         required
                         disabled={isRegisterLoading}
-                        className="h-12 bg-black/30 border-white/20 focus:ring-[#276266] focus:border-[#276266]"
+                        // Input updated for light theme: white background, light border, green focus
+                        className={`h-12 bg-white ${BORDER_COLOR} border ${FOCUS_GREEN}`}
                       />
                       <PasswordToggle
                         show={showRegisterPassword}
@@ -271,7 +292,8 @@ export default function RegisterPage() {
                         onChange={handleRegisterChange}
                         required
                         disabled={isRegisterLoading}
-                        className="h-12 bg-black/30 border-white/20 focus:ring-[#276266] focus:border-[#276266]"
+                        // Input updated for light theme: white background, light border, green focus
+                        className={`h-12 bg-white ${BORDER_COLOR} border ${FOCUS_GREEN}`}
                       />
                       <PasswordToggle
                         show={showConfirmPassword}
@@ -280,7 +302,8 @@ export default function RegisterPage() {
                     </div>
                   </div>
                   <Button
-                    className="w-full h-12 mt-6 rounded-lg bg-[#276266] hover:bg-[#1f4c4f] transition-colors"
+                    // Button updated to use the modern green color
+                    className={`w-full h-12 mt-6 rounded-lg text-white ${PRIMARY_GREEN} transition-colors`}
                     type="submit"
                     disabled={isRegisterLoading}
                   >
@@ -299,19 +322,23 @@ export default function RegisterPage() {
           </TabsContent>
 
           <TabsContent value="login">
-            <Card className="w-full border-white/10 shadow-xl bg-black/20 text-white rounded-2xl">
+            <Card 
+              // Card styles updated for light theme: white background, subtle shadow/border
+              className={`w-full ${BORDER_COLOR} border shadow-lg bg-white text-gray-900 rounded-2xl`}
+            >
               <CardHeader className="text-center">
                 <CardTitle className="text-2xl font-bold">
                   Welcome Back
                 </CardTitle>
-                <CardDescription className="text-gray-400">
+                <CardDescription className="text-gray-600">
                   Enter your credentials to log in.
                 </CardDescription>
               </CardHeader>
               <CardContent className="px-6 pb-6">
                 <form className="space-y-4" onSubmit={handleLoginSubmit}>
                   {loginError && (
-                    <div className="p-3 bg-red-900/50 border border-red-500/50 text-red-300 rounded-lg text-sm">
+                    // Error box updated for better visibility on a light background
+                    <div className="p-3 bg-red-100 border border-red-500 text-red-700 rounded-lg text-sm">
                       {loginError}
                     </div>
                   )}
@@ -326,7 +353,8 @@ export default function RegisterPage() {
                       onChange={handleLoginChange}
                       required
                       disabled={isLoginLoading}
-                      className="h-12 bg-black/30 border-white/20 focus:ring-[#276266] focus:border-[#276266]"
+                      // Input updated for light theme: white background, light border, green focus
+                      className={`h-12 bg-white ${BORDER_COLOR} border ${FOCUS_GREEN}`}
                     />
                   </div>
                   <div className="space-y-2">
@@ -341,7 +369,8 @@ export default function RegisterPage() {
                         onChange={handleLoginChange}
                         required
                         disabled={isLoginLoading}
-                        className="h-12 bg-black/30 border-white/20 focus:ring-[#276266] focus:border-[#276266]"
+                        // Input updated for light theme: white background, light border, green focus
+                        className={`h-12 bg-white ${BORDER_COLOR} border ${FOCUS_GREEN}`}
                       />
                       <PasswordToggle
                         show={showLoginPassword}
@@ -350,7 +379,8 @@ export default function RegisterPage() {
                     </div>
                   </div>
                   <Button
-                    className="w-full h-12 mt-6 rounded-lg bg-[#276266] hover:bg-[#1f4c4f] transition-colors"
+                    // Button updated to use the modern green color
+                    className={`w-full h-12 mt-6 rounded-lg text-white ${PRIMARY_GREEN} transition-colors`}
                     type="submit"
                     disabled={isLoginLoading}
                   >

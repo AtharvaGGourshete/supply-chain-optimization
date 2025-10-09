@@ -5,7 +5,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { setActiveAnalysis } from '../features/analysisSlice';
 import { useLogoutUserMutation } from '../features/api/authApi';
-import { LayoutDashboard, BarChart, Warehouse, Route, Users, LogOut } from 'lucide-react';
+import { LayoutDashboard, BarChart, Warehouse, Route, Users, LogOut, User } from 'lucide-react';
+import { Separator } from "@/components/ui/separator"
 
 const SidebarItem = ({ icon, text, to, onClick, isActive }) => {
     const activeClass = isActive ? 'bg-green-600 text-white' : 'text-gray-300 hover:bg-green-800 hover:text-white';
@@ -41,6 +42,10 @@ export const Sidebar = () => {
         await logoutUser();
         navigate('/'); // Redirect to landing page after logout
     };
+
+    const handleProfileNavigation = () => {
+        navigate('/profile');
+    }
 
     const isDashboardActive = location.pathname === '/dashboard';
 
@@ -91,8 +96,17 @@ export const Sidebar = () => {
                     />
                 </nav>
             </div>
+
+            
             {/* Logout Button at the bottom */}
             <div>
+                 <Separator className="mb-2"/>
+                 <SidebarItem 
+                    icon={<User size={20} />}
+                    text="Profile"
+                    onClick={handleProfileNavigation}
+                    className="hover:bg-green-600"
+                />
                  <SidebarItem 
                     icon={<LogOut size={20} />}
                     text="Logout"

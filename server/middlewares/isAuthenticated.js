@@ -1,30 +1,37 @@
-// middlewares/isAuthenticated.js (CONFIRMED CORRECT)
+// path: server/middlewares/isAuthenticated.js
+
 import jwt from "jsonwebtoken";
+import User from "../models/users.js";
 
 const isAuthenticated = async (req, res, next) => {
-  try {
-    const token = req.cookies.token; // <--- Reads from HTTP-Only Cookie
-    if (!token) {
-      return res.status(401).json({
-        message: "User not authenticated",
-        success: false,
-      });
-    }
-    
-    // Use the secret key from your environment
-    const decode = jwt.verify(token, process.env.JWT_SECRET || 'your-fallback-secret-key'); 
-    
-    // If decoding fails (expired/invalid), the catch block handles the 401
-    
-    req.id = decode.userId; // Set user ID on request
-    next();
-  } catch (error) {
-    // This catches JWT errors like 'TokenExpiredError' or 'JsonWebTokenError'
-    console.error('Authentication Error:', error.message);
-    return res.status(401).json({
-      message: "Invalid or expired token. Please log in again.",
-      success: false,
-    });
-  }
+    try {
+        // --- THE CRITICAL FIX ---
+        // Read the cookie named "token", which matches what authController sets.
+        const { token } = req.cookies;
+
+        if (!token) {
+            return res.status(401).json({ success: false, message: "Not authenticated. No token provided." });
+        }
+
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        if (!decoded) {
+            return res.status(401).json({ success: false, message: "Not authenticated. Invalid token." });
+        }
+
+        // Attach the full user object to the request. This is what your other controllers need.
+        req.user = await User.findById(decoded.userId).select("-password");
+        
+        if (!req.user) {
+             return res.status(404).json({ success: false, message: "User not found." });
+        }
+
+        next();
+    } catch (error) {
+        if (error.name === 'TokenExpiredError') {
+            return res.status(401).json({ success: false, message: "Token expired. Please log in again." });
+        }
+        res.status(500).json({ success: false, message: "Authentication error." });
+    }
 };
+
 export default isAuthenticated;

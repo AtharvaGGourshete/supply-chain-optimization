@@ -1,46 +1,41 @@
-// src/App.jsx (UPDATED)
+// path: frontend/src/App.jsx
+import React from 'react';
 import { Route, Routes, BrowserRouter as Router } from "react-router-dom";
-import RegisterPage from "./pages/RegisterPage";
-import LandingPage from "./pages/LandingPage";
-import WarehouseSetupPage from "./pages/WarehouseSetupPage";
-import RouteOptimizationPage from "./pages/RouteOptimizationPage";
-import Dashboard from "./pages/Dashboard";
 import { Provider } from "react-redux";
 import { store } from "./app/store";
-import { Toaster } from "./components/ui/sonner";
-import Documentation from "./pages/Documentation";
+import { useLoadUserQuery } from "./features/api/authApi";
 import ProtectedRoute from "./components/ProtectedRoute";
-import { useLoadUserQuery } from "./features/api/authApi"; 
+import LandingPage from "./pages/LandingPage";
+import RegisterPage from "./pages/RegisterPage";
+import Dashboard from "./pages/Dashboard";
+import WarehouseSetupPage from "./pages/WarehouseSetupPage";
+import RouteOptimizationPage from "./pages/RouteOptimizationPage";
+import Documentation from "./pages/Documentation";
 import Profile from "./pages/Profile";
 import SupplierSelection from './pages/SupplierSelectionPage';
+import { Toaster } from "./components/ui/sonner";
 
-// Component to handle initial user loading/session check
 const AppContent = () => {
-    // This query runs on mount and sends the HTTP-Only cookie to the backend /profile endpoint
     const { isLoading } = useLoadUserQuery();
 
     if (isLoading) {
-        // Optional: Render a full-screen loading spinner while checking the session
         return (
-            <div className="flex items-center justify-center min-h-screen bg-[#143234] text-white">
-                <p>Loading session...</p>
-                {/* <Loader2 className="h-8 w-8 animate-spin" /> */}
+            <div className="flex flex-col items-center justify-center min-h-screen bg-[#143234]">
+                <div className="animate-spin h-12 w-12 border-4 border-orange-400 border-t-transparent rounded-full"></div>
+                <p className="text-lg text-gray-300 mt-4">Loading Session...</p>
             </div>
         );
     }
 
     return (
         <Routes>
-            {/* Public Routes */}
             <Route path="/" element={<LandingPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/documentation" element={<Documentation />} />
-            
-            {/* Protected Routes - only accessible when logged in */}
             <Route element={<ProtectedRoute />}>
+                <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/warehouse" element={<WarehouseSetupPage />} />
                 <Route path="/optimize-routes" element={<RouteOptimizationPage />} />
-                <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/supplier-selection" element={<SupplierSelection />} />
             </Route>
@@ -48,16 +43,15 @@ const AppContent = () => {
     );
 };
 
-
 function App() {
-return (
-    <Provider store={store}>
-        <Router>
-            <AppContent /> {/* Render the main content wrapper */}
-        </Router>
-        <Toaster richColors/>
-    </Provider>
-);
+    return (
+        <Provider store={store}>
+            <Router>
+                <AppContent />
+            </Router>
+            <Toaster richColors/>
+        </Provider>
+    );
 }
 
 export default App;

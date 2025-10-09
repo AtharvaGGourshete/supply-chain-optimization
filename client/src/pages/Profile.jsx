@@ -60,8 +60,8 @@ const Profile = () => {
 
   return (
     <>
-      <SleekNavbar />
-      <div className="min-h-screen bg-gray-50 py-10 mt-20">
+      {/* <SleekNavbar /> */}
+      <div className="min-h-screen bg-gray-50 py-10">
         {/* Main Content Container (Full Width) */}
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           
@@ -194,7 +194,7 @@ const Profile = () => {
           </div>
         </div>
       </div>
-      <Footer />
+      {/* <Footer /> */}
     </>
   );
 };

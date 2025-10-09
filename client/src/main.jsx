@@ -1,15 +1,13 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App.jsx'
-import { ReactLenis, useLenis } from 'lenis/react'
-import { SidebarProvider, SidebarTrigger } from './components/ui/sidebar'
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App';
+import './index.css';
 
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    {/* <SidebarProvider> */}
-    <ReactLenis root />
-      <App />
-    {/* </SidebarProvider> */}
-  </StrictMode>,
-)
+// NO MORE CONTEXT PROVIDERS ARE NEEDED HERE.
+// The Redux Provider is correctly placed inside your App.jsx file.
+
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>,
+);

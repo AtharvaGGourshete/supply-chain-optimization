@@ -1,141 +1,105 @@
-import React, { useEffect } from 'react';
-import {
-  FiHome,
-  FiBarChart2,
-  FiCheckSquare,
-  FiFlag,
-  FiUsers,
-  FiSettings,
-  FiHelpCircle,
-  FiLogOut,
-} from 'react-icons/fi';
-import { MoreVertical, ChevronLast, ChevronFirst } from "lucide-react";
-import { useContext, createContext, useState } from "react";
-import { Link, useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { useLogoutUserMutation } from '@/features/api/authApi';
-import { Button } from './ui/button';
+// path: frontend/src/components/Sidebar.jsx
 
-// The context for managing the expanded state
-const SidebarContext = createContext();
+import React from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
+import { setActiveAnalysis } from '../features/analysisSlice';
+import { useLogoutUserMutation } from '../features/api/authApi';
+import { LayoutDashboard, BarChart, Warehouse, Route, Users, LogOut } from 'lucide-react';
 
-// The main Sidebar component (replacing the static one)
-export default function Sidebar({ children }) {
-  const [expanded, setExpanded] = useState(true);
-  const { user, isAuthenticated } = useSelector((store) => store.auth);
-    const [logoutUser, { data, isSuccess }] = useLogoutUserMutation();
+const SidebarItem = ({ icon, text, to, onClick, isActive }) => {
+    const activeClass = isActive ? 'bg-green-600 text-white' : 'text-gray-300 hover:bg-green-800 hover:text-white';
+    
+    const content = (
+        <span className={`flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors duration-200 ${activeClass}`}>
+            {icon}
+            <span className="ml-3">{text}</span>
+        </span>
+    );
+    
+    if (to) {
+        return <Link to={to}>{content}</Link>;
+    }
+    
+    return <div onClick={onClick} className="cursor-pointer">{content}</div>;
+};
+
+export const Sidebar = () => {
+    const { activeAnalysis, singleData, aggregateData } = useSelector((state) => state.analysis);
+    const dispatch = useDispatch();
     const navigate = useNavigate();
-  
-    const logoutHandler = async () => {
-      await logoutUser();
+    const location = useLocation();
+
+    const [logoutUser] = useLogoutUserMutation();
+
+    const handleNavigation = (analysisType) => {
+        dispatch(setActiveAnalysis(analysisType));
+        navigate('/dashboard');
     };
-  
-    useEffect(() => {
-      if (isSuccess) {
-        toast.success(data?.message || "User log out.");
-        navigate("/register");
-      }
-    }, [isSuccess]);
 
-  return (
-    <aside className="h-screen">
-      <nav className="h-full flex flex-col bg-white border-r shadow-sm">
-        {/* Header/Logo Section */}
-        <div className="p-4 pb-2 flex justify-between items-center">
-          {/* Using a placeholder for the Dashboard text since the provided one uses an image */}
-          <span
-            className={`self-center text-xl font-semibold whitespace-nowrap overflow-hidden transition-all ${
-              expanded ? "w-32" : "w-0"
-            }`}
-          >
-            Dashboard
-          </span>
-          <button
-            onClick={() => setExpanded((curr) => !curr)}
-            className="p-1.5 rounded-lg bg-gray-50 hover:bg-gray-100"
-          >
-            {expanded ? <ChevronFirst /> : <ChevronLast />}
-          </button>
-        </div>
+    const handleLogout = async () => {
+        await logoutUser();
+        navigate('/'); // Redirect to landing page after logout
+    };
 
-        {/* Sidebar Items Section */}
-        <SidebarContext.Provider value={{ expanded }}>
-          {/* Note: In your original code, the menu items were hardcoded inside the static Sidebar component.
-              In this updated component, I am putting them here, but typically, the 'children' prop would be used to pass them in from a parent component. */}
-          <ul className="flex-1 px-3">
-            <SidebarItem icon={<FiHome size={20} />} text="Single Product Optimization" active />
-            <SidebarItem icon={<FiBarChart2 size={20} />} text="Aggregate Business Forecast" alert />
-            {/* Additional items from the static example, using the new SidebarItem */}
-            <SidebarItem icon={<FiCheckSquare size={20} />} text="Tasks" />
-            <SidebarItem icon={<FiFlag size={20} />} text="Reports" />
-            <Link to="/profile  ">
-            <SidebarItem icon={<FiUsers size={20} />} text="Profile" /></Link>
-            <SidebarItem icon={<FiSettings size={20} />} text="Settings" />
-            <SidebarItem icon={<FiHelpCircle size={20} />} text="Help" />
-            {/* <Button onClick={logoutHandler} variant={"outline"}>
-            <SidebarItem icon={<FiLogOut size={20} />} text="Logout" /></Button> */}
-          </ul>
-        </SidebarContext.Provider>
+    const isDashboardActive = location.pathname === '/dashboard';
 
-        {/* User Profile Section */}
-        <div className="flex p-3">
-         <SidebarContext.Provider value={{ expanded }}>
-          <Button onClick={logoutHandler} variant={"outline"}>
-            <SidebarItem icon={<FiLogOut size={20} />} text="Logout" /></Button>
-          </SidebarContext.Provider>
-        </div>
-      </nav>
-    </aside>
-  );
-}
-
-// The reusable SidebarItem component
-export function SidebarItem({ icon, text, active, alert }) {
-  const { expanded } = useContext(SidebarContext);
-
-  return (
-    <li
-      className={`
-        relative flex items-center py-2 px-3 my-1
-        font-medium rounded-md cursor-pointer
-        transition-colors group
-        ${
-          active
-            ? "bg-gradient-to-tr from-indigo-200 to-indigo-100 text-indigo-800"
-            : "hover:bg-indigo-50 text-gray-600"
-        }
-    `}
-    >
-      {icon}
-      <span
-        className={`overflow-hidden transition-all ${
-          expanded ? "w-52 ml-3" : "w-0"
-        }`}
-      >
-        {text}
-      </span>
-      {alert && (
-        <div
-          className={`absolute right-2 w-2 h-2 rounded bg-indigo-400 ${
-            expanded ? "" : "top-2"
-          }`}
-        />
-      )}
-      {!expanded && (
-        <div
-          className={`
-          absolute left-full rounded-md px-2 py-1 ml-6
-          bg-indigo-100 text-indigo-800 text-sm
-          invisible opacity-20 -translate-x-3 transition-all
-          group-hover:visible group-hover:opacity-100 group-hover:translate-x-0
-      `}
-        >
-          {text}
-        </div>
-      )}
-    </li>
-  );
-}
-
-// Removing the previous 'export default Sidebar;' since the new one is 'export default function Sidebar'
-// and is exported above.
+    return (
+        <aside className="w-64 bg-[#143234] text-white p-4 flex flex-col justify-between">
+            <div>
+                {/* Logo or App Name */}
+                <div className="flex items-center ml-3">
+                            <Link to="/" className="flex items-center space-x-2">
+                              <img src="/shape.png" alt="ChainSaw Logo" className="h-10 w-10" />
+                              <p className="text-2xl poppins font-semibold text-white ">ChainSaw</p>
+                            </Link>
+                          </div>
+                <nav className="space-y-2 mt-4">
+                    {singleData && (
+                        <SidebarItem 
+                            icon={<LayoutDashboard size={20} />}
+                            text="Single Product"
+                            onClick={() => handleNavigation('single')}
+                            isActive={isDashboardActive && activeAnalysis === 'single'}
+                        />
+                    )}
+                    {aggregateData && (
+                        <SidebarItem 
+                            icon={<BarChart size={20} />}
+                            text="Aggregate Business"
+                            onClick={() => handleNavigation('aggregate')}
+                            isActive={isDashboardActive && activeAnalysis === 'aggregate'}
+                        />
+                    )}
+                    <SidebarItem 
+                        icon={<Warehouse size={20} />}
+                        text="Warehouse Setup"
+                        to="/warehouse"
+                        isActive={location.pathname === '/warehouse'}
+                    />
+                     <SidebarItem 
+                        icon={<Route size={20} />}
+                        text="Optimize Routes"
+                        to="/optimize-routes"
+                        isActive={location.pathname === '/optimize-routes'}
+                    />
+                     <SidebarItem 
+                        icon={<Users size={20} />}
+                        text="Supplier Selection"
+                        to="/supplier-selection"
+                        isActive={location.pathname === '/supplier-selection'}
+                    />
+                </nav>
+            </div>
+            {/* Logout Button at the bottom */}
+            <div>
+                 <SidebarItem 
+                    icon={<LogOut size={20} />}
+                    text="Logout"
+                    onClick={handleLogout}
+                    className="hover:bg-green-600"
+                />
+            </div>
+        </aside>
+    );
+};

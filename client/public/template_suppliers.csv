@@ -1,0 +1,11 @@
+supplier_id,supplier_name,unit_price,on_time_delivery_rate,avg_lead_time,quality_rating,defect_rate,distance_km,financial_rating,capacity
+SUPP001,ABC Manufacturing Ltd,25.50,94.5,7,4.2,2.1,150,A,10000
+SUPP002,XYZ Global Suppliers,23.80,89.2,10,3.8,3.5,220,B,8000
+SUPP003,Premium Parts Co,28.00,96.1,5,4.5,1.8,80,A,15000
+SUPP004,Local Supply Inc,22.75,87.3,12,3.5,4.2,45,B,5000
+SUPP005,Quality Materials Ltd,32.00,98.5,3,4.8,0.9,200,A,12000
+SUPP006,Budget Components,19.50,82.1,15,3.2,5.8,350,C,3000
+SUPP007,Reliable Industries,26.25,91.7,8,4.1,2.8,120,A,9500
+SUPP008,Express Logistics,24.90,85.6,9,3.6,4.1,180,B,6500
+SUPP009,Global Trade Partners,21.30,88.9,11,3.9,3.2,280,B,7200
+SUPP010,Precision Manufacturing,35.75,99.2,2,4.9,0.5,95,A,18000

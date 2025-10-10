@@ -21,7 +21,7 @@ const AppContent = () => {
     if (isLoading) {
         return (
             <div className="flex flex-col items-center justify-center min-h-screen bg-[#143234]">
-                <div className="animate-spin h-12 w-12 border-4 border-orange-400 border-t-transparent rounded-full"></div>
+                <div className="animate-spin h-12 w-12 border-4 border-green-600 border-t-transparent rounded-full"></div>
                 <p className="text-lg text-gray-300 mt-4">Loading Session...</p>
             </div>
         );

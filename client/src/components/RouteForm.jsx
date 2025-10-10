@@ -70,7 +70,9 @@ const RouteForm = ({ onRoutesOptimized, onError, setLoading }) => {
   return (
     <Card className="bg-[#1A1A1A] border border-neutral-700 text-white shadow-2xl">
       <CardHeader>
-        <CardTitle className="text-center text-xl">Enter Route Details</CardTitle>
+        <CardTitle className="text-center text-xl">
+          Enter Route Details
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -108,26 +110,33 @@ const RouteForm = ({ onRoutesOptimized, onError, setLoading }) => {
               )}
             </div>
           ))}
+          <div className="flex gap-5">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={addLocation}
+              className="w-40 border-dashed bg-[#1F2326] border-green-500 text-green-500 hover:bg-green-900/50 hover:text-green-400 cursor-pointer"
+            >
+              Add Delivery Location
+            </Button>
 
-          <Button
-            type="button"
-            variant="outline"
-            onClick={addLocation}
-            className="w-full border-dashed bg-[#1F2326] border-green-500 text-green-500 hover:bg-green-900/50 hover:text-green-400 cursor-pointer"
-          >
-            Add Delivery Location
-          </Button>
-
-          <Select value={profile} onValueChange={setProfile}>
-            <SelectTrigger className="bg-neutral-800 border-neutral-600 text-white">
-              <SelectValue placeholder="Select transportation profile" />
-            </SelectTrigger>
-            <SelectContent className="bg-neutral-800 border-neutral-600 text-white">
-              <SelectItem value="driving" className="hover:bg-neutral-700">Driving</SelectItem>
-              <SelectItem value="driving-traffic" className="hover:bg-neutral-700">Driving with Traffic</SelectItem>
-            </SelectContent>
-          </Select>
-
+            <Select value={profile} onValueChange={setProfile} className="">
+              <SelectTrigger className="bg-neutral-800 border-neutral-600 text-white cursor-pointer">
+                <SelectValue placeholder="Select transportation profile" />
+              </SelectTrigger>
+              <SelectContent className="bg-neutral-800 border-neutral-600 text-white">
+                <SelectItem value="driving" className="hover:bg-neutral-700 cursor-pointer">
+                  Driving
+                </SelectItem>
+                <SelectItem
+                  value="driving-traffic"
+                  className="hover:bg-neutral-700 cursor-pointer"
+                >
+                  Driving with Traffic
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
           <Button
             type="submit"
             className="w-52 bg-[#1F2326] hover:bg-white text-white hover:text-black cursor-pointer font-bold text-lg py-6"

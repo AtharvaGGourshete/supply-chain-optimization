@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Upload, Download, AlertCircle } from "lucide-react";
+import { Upload, Download, AlertCircle, Info } from "lucide-react";
 import {
   ResponsiveContainer,
   BarChart,
@@ -11,9 +11,9 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
-  Tooltip,
 } from "recharts";
 import { ScaleLoader } from "react-spinners"; // <-- 1. IMPORT THE SPINNER
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -46,34 +46,6 @@ const SupplierSelectionPage = () => {
       ...prev,
       [criterion]: Number(value),
     }));
-  };
-
-  const downloadTemplate = async () => {
-    try {
-      const response = await fetch(`${API_URL}/api/suppliers/template`);
-      if (!response.ok) throw new Error("Network response was not ok.");
-      const template = await response.json();
-      const headers = template.headers.join(",");
-      const sampleRows = template.sample_data
-        .map((row) =>
-          template.headers.map((header) => `"${row[header]}"`).join(",")
-        )
-        .join("\n");
-      const csvContent = `${headers}\n${sampleRows}`;
-      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "supplier_evaluation_template.csv";
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      window.URL.revokeObjectURL(url);
-    } catch (err) {
-      setError(
-        "Failed to download template. The API server may be unavailable."
-      );
-    }
   };
 
   const evaluateSuppliers = async () => {
@@ -166,12 +138,13 @@ const SupplierSelectionPage = () => {
                   correctly.
                 </p>
               </div>
+              <a href="./template_suppliers.csv">
               <Button
-                onClick={downloadTemplate}
-                className="mt-4 sm:mt-0 bg-green-600 text-white hover:bg-green-700 transition-colors duration-300"
+                className="mt-4 sm:mt-0 bg-green-600 text-white hover:bg-green-700 transition-colors duration-300 cursor-pointer"
               >
                 <Download className="mr-2 h-4 w-4" /> Download Template
               </Button>
+              </a>
             </div>
 
             <div className="space-y-3">
@@ -198,42 +171,74 @@ const SupplierSelectionPage = () => {
               </div>
             </div>
 
-            <div className="space-y-4">
-              <h4 className="text-xl font-semibold text-gray-800">
-                Evaluation Criteria Weights (%)
-              </h4>
-              <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                {Object.entries(weights).map(([criterion, value]) => (
-                  <div key={criterion} className="space-y-2">
-                    <Label className="text-sm capitalize text-gray-600">
-                      {criterion.replace("_", " ")}
-                    </Label>
-                    <Input
-                      type="number"
-                      min="0"
-                      max="100"
-                      value={value}
-                      onChange={(e) =>
-                        handleWeightChange(criterion, e.target.value)
-                      }
-                      className="bg-white border-gray-300 text-gray-800 focus:ring-green-500 focus:border-green-500"
-                    />
-                  </div>
-                ))}
-              </div>
-              <p
-                className={`text-sm font-semibold ${
-                  Object.values(weights).reduce((sum, val) => sum + val, 0) ===
-                  100
-                    ? "text-green-600"
-                    : "text-red-600"
-                }`}
-              >
-                Total Weight:{" "}
-                {Object.values(weights).reduce((sum, val) => sum + val, 0)}%
-                (Must be 100%)
-              </p>
+            <TooltipProvider delayDuration={200}>
+  <div className="space-y-4">
+    <h4 className="text-xl font-semibold text-gray-800">
+      Evaluation Criteria Weights (%)
+    </h4>
+
+    <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+      {Object.entries(weights).map(([criterion, value]) => {
+        const labelText = criterion.replace("_", " ");
+
+        const helpByKey = {
+          cost: "Lower cost normalizes to a higher score; balance against quality and reliability.",
+          reliability: "Delivery consistency, SLA adherence, and defect history influence reliability.",
+          quality: "Inspection pass rates and product conformance drive quality scoring.",
+          lead_time: "Shorter lead time is scored higher after scaling and normalization.",
+          location: "Closer suppliers reduce logistics risk, time, and transportation cost.",
+        };
+
+        const tip = helpByKey[criterion] ?? "Adjust weight to influence total score contribution.";
+
+        return (
+          <div key={criterion} className="space-y-2">
+            <div className="flex items-center gap-1">
+              <Label className="text-sm capitalize text-gray-600">
+                {labelText}
+              </Label>
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    type="button"
+                    aria-label={`${labelText} help`}
+                    className="inline-flex rounded p-0.5 text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+                  >
+                    <Info className="h-4 w-4" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="top" align="start" className="max-w-xs">
+                  <p className="text-sm">{tip}</p>
+                </TooltipContent>
+              </Tooltip>
             </div>
+
+            <Input
+              type="number"
+              min="0"
+              max="100"
+              value={value}
+              onChange={(e) => handleWeightChange(criterion, e.target.value)}
+              className="bg-white border-gray-300 text-gray-800 focus:ring-green-500 focus:border-green-500"
+            />
+          </div>
+        );
+      })}
+    </div>
+
+    <p
+      className={`text-sm font-semibold ${
+        Object.values(weights).reduce((sum, val) => sum + val, 0) === 100
+          ? "text-green-600"
+          : "text-red-600"
+      }`}
+    >
+      Total Weight: {Object.values(weights).reduce((sum, val) => sum + val, 0)}%
+      (Must be 100%)
+    </p>
+  </div>
+</TooltipProvider>
 
             {error && (
               <div className="flex items-center p-4 bg-red-100 rounded-lg border border-red-300">

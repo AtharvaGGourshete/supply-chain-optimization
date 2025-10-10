@@ -105,6 +105,7 @@ export const Sidebar = () => {
                     icon={<User size={20} />}
                     text="Profile"
                     onClick={handleProfileNavigation}
+                    isActive={location.pathname === '/profile'}
                     className="hover:bg-green-600"
                 />
                  <SidebarItem 

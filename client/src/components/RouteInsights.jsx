@@ -66,8 +66,8 @@ const   RouteInsights = ({ routes }) => {
           <BarChart3 className="h-6 w-6 text-white" />
         </div> */}
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Route Optimization Insights</h2>
-          <p className="text-gray-600">Analysis of your optimized delivery route</p>
+          <h2 className="text-3xl font-bold text-gray-900">Route Optimization <span className="text-green-600">Insights</span></h2>
+          <p className="text-gray-600 mr-26">Analysis of your optimized delivery route</p>
         </div>
       </div>
 
@@ -76,10 +76,10 @@ const   RouteInsights = ({ routes }) => {
         <Card className="bg-white border-gray-200 hover:bg-gray-50 hover:shadow-md transition-all duration-300">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-gray-700">Total Distance</CardTitle>
-            <Route className="h-4 w-4 text-[#30767b]" />
+            <Route className="h-4 w-4 text-green-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-[#30767b] mb-1">{insights.totalDistance} km</div>
+            <div className="text-2xl font-bold text-green-600 mb-1">{insights.totalDistance} km</div>
             <p className="text-xs text-gray-500">Total route distance</p>
           </CardContent>
         </Card>
@@ -87,10 +87,10 @@ const   RouteInsights = ({ routes }) => {
         <Card className="bg-white border-gray-200 hover:bg-gray-50 hover:shadow-md transition-all duration-300">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-gray-700">Total Duration</CardTitle>
-            <Clock className="h-4 w-4 text-[#30767b]" />
+            <Clock className="h-4 w-4 text-green-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-[#30767b] mb-1">{insights.totalDuration}</div>
+            <div className="text-2xl font-bold text-green-600 mb-1">{insights.totalDuration}</div>
             <p className="text-xs text-gray-500">Estimated travel time</p>
           </CardContent>
         </Card>
@@ -98,10 +98,10 @@ const   RouteInsights = ({ routes }) => {
         <Card className="bg-white border-gray-200 hover:bg-gray-50 hover:shadow-md transition-all duration-300">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-gray-700">Delivery Stops</CardTitle>
-            <MapPin className="h-4 w-4 text-[#30767b]" />
+            <MapPin className="h-4 w-4 text-green-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-[#30767b] mb-1">{insights.waypointsCount - 1}</div>
+            <div className="text-2xl font-bold text-green-600 mb-1">{insights.waypointsCount - 1}</div>
             <p className="text-xs text-gray-500">Number of stops</p>
           </CardContent>
         </Card>
@@ -109,10 +109,10 @@ const   RouteInsights = ({ routes }) => {
         <Card className="bg-white border-gray-200 hover:bg-gray-50 hover:shadow-md transition-all duration-300">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-gray-700">Estimated Cost</CardTitle>
-            <DollarSign className="h-4 w-4 text-[#30767b]" />
+            <DollarSign className="h-4 w-4 text-green-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-[#30767b] mb-1">₹{insights.totalCost}</div>
+            <div className="text-2xl font-bold text-green-600 mb-1">₹{insights.totalCost}</div>
             <p className="text-xs text-gray-500">Fuel + driver costs</p>
           </CardContent>
         </Card>
@@ -130,33 +130,33 @@ const   RouteInsights = ({ routes }) => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             <div className="text-center space-y-2">
               <div className="inline-flex items-center justify-center p-3 rounded-full bg-gray-100">
-                <TrendingUp className="h-5 w-5 text-[#30767b]" />
+                <TrendingUp className="h-5 w-5 text-green-600" />
               </div>
-              <div className="text-lg font-semibold text-[#30767b]">{insights.avgSpeed} km/h</div>
+              <div className="text-lg font-semibold text-green-600">{insights.avgSpeed} km/h</div>
               <div className="text-sm text-gray-600">Average Speed</div>
             </div>
 
             <div className="text-center space-y-2">
               <div className="inline-flex items-center justify-center p-3 rounded-full bg-gray-100">
-                <Fuel className="h-5 w-5 text-[#30767b]" />
+                <Fuel className="h-5 w-5 text-green-600" />
               </div>
-              <div className="text-lg font-semibold text-[#30767b]">₹{insights.estimatedFuelCost}</div>
+              <div className="text-lg font-semibold text-green-600">₹{insights.estimatedFuelCost}</div>
               <div className="text-sm text-gray-600">Fuel Cost</div>
             </div>
 
             <div className="text-center space-y-2">
               <div className="inline-flex items-center justify-center p-3 rounded-full bg-gray-100">
-                <Timer className="h-5 w-5 text-[#30767b]" />
+                <Timer className="h-5 w-5 text-green-600" />
               </div>
-              <div className="text-lg font-semibold text-[#30767b]">₹{insights.estimatedDriverCost}</div>
+              <div className="text-lg font-semibold text-green-600">₹{insights.estimatedDriverCost}</div>
               <div className="text-sm text-gray-600">Driver Cost</div>
             </div>
 
             <div className="text-center space-y-2">
               <div className="inline-flex items-center justify-center p-3 rounded-full bg-gray-100">
-                <Navigation className="h-5 w-5 text-[#30767b]" />
+                <Navigation className="h-5 w-5 text-green-600" />
               </div>
-              <div className="text-lg font-semibold text-[#30767b]">{insights.routesCount}</div>
+              <div className="text-lg font-semibold text-green-600">{insights.routesCount}</div>
               <div className="text-sm text-gray-600">Routes Generated</div>
             </div>
           </div>

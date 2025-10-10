@@ -11,6 +11,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { ArrowLeft, ArrowRight, Upload, AlertCircle, Info } from "lucide-react";
 import { ScaleLoader } from "react-spinners";
 
+// Move components OUTSIDE the render function to prevent remounting [web:21][web:41]
 const Stepper = ({ currentStep, steps }) => (
   <div className="flex items-center justify-center w-full">
     {steps.map((step, index) => {
@@ -44,6 +45,79 @@ const Stepper = ({ currentStep, steps }) => (
   </div>
 );
 
+const FileUploadArea = ({ onFileChange, file, requiredColumns }) => (
+  <div className="space-y-6">
+    <div
+      className="flex flex-col items-center justify-center p-12 border-2 border-dashed border-gray-300 rounded-xl hover:border-green-500 hover:bg-green-50 transition-all duration-300 cursor-pointer"
+      onClick={() => document.getElementById("fileInput")?.click()}
+    >
+      <Upload className="w-16 h-16 text-gray-400" />
+      <p className="mt-4 text-xl font-semibold text-gray-700">Drag & drop your file here</p>
+      <p className="text-gray-500">or</p>
+      <Button as="span" variant="outline" className="mt-2 text-green-700 border-green-600 hover:bg-green-600 hover:text-white">
+        Choose a file
+      </Button>
+      <input id="fileInput" type="file" onChange={onFileChange} accept=".csv" className="hidden" />
+    </div>
+    {file && <p className="text-center text-green-700 font-semibold">{file.name}</p>}
+    <p className="text-center text-sm text-gray-600">
+      Required columns:{" "}
+      {requiredColumns
+        .map((col) => (
+          <strong key={col} className="text-gray-800">
+            {col}
+          </strong>
+        ))
+        .reduce((prev, curr) => [prev, ", ", curr])}
+      .
+    </p>
+  </div>
+);
+
+// CRITICAL: Move NumericField outside render to prevent remounting [web:21][web:41][web:45]
+const NumericField = ({ id, label, placeholder, step, value, onChange, docKey }) => {
+  const inputStyles = "bg-white border-gray-300 text-gray-800 focus:ring-2 focus:ring-green-500 focus:border-green-500 h-12 text-base rounded-lg";
+  const labelStyles = "text-base font-medium text-gray-700 flex items-center";
+
+  const labelNode = (
+    <>
+      {label}
+      {docKey && (
+        <Link to={`/documentation?highlight=${docKey}`} className="ml-2">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button type="button" aria-label={`Learn more about ${label}`} className="ml-2">
+                <Info className="w-4 h-4 text-gray-500 hover:text-gray-700" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Learn more</p>
+            </TooltipContent>
+          </Tooltip>
+        </Link>
+      )}
+    </>
+  );
+
+  return (
+    <div className="space-y-2">
+      <Label htmlFor={id} className={labelStyles}>
+        {labelNode}
+      </Label>
+      <Input
+        id={id}
+        type="number"
+        inputMode="decimal"
+        step={step}
+        placeholder={placeholder}
+        value={value}
+        onChange={onChange}
+        className={inputStyles}
+      />
+    </div>
+  );
+};
+
 export default function WarehouseSetupPage() {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
@@ -55,12 +129,12 @@ export default function WarehouseSetupPage() {
     warehouseAddress: "",
     storageLocations: "",
     salesCsv: null,
-    serviceLevel: 0.95,
-    leadTimeDays: 7,
-    currentInventory: 0,
-    orderingCost: 100,
-    holdingCost: 10,
-    unitCost: 50,
+    serviceLevel: "0.95",
+    leadTimeDays: "7",
+    currentInventory: "0",
+    orderingCost: "100",
+    holdingCost: "10",
+    unitCost: "50",
     analysisType: null,
   });
   const [error, setError] = useState("");
@@ -70,21 +144,14 @@ export default function WarehouseSetupPage() {
   const [runAggregateForecast, { isLoading: isAggregateLoading }] = useRunAggregateForecastMutation();
   const loading = isSingleLoading || isAggregateLoading;
 
-  const handleInputChange = (e) => setFormData((prev) => ({ ...prev, [e.target.id]: e.target.value }));  // React controlled inputs [web:32]
-  const handleSelectChange = (value, id) => setFormData((prev) => ({ ...prev, [id]: value }));  // shadcn Select onValueChange pattern [web:32]
-  const handleFileChange = (event) => setFormData((prev) => ({ ...prev, salesCsv: event.target.files?.[0] ?? null }));  // file into FormData later [web:42]
+  const handleInputChange = (e) => setFormData((prev) => ({ ...prev, [e.target.id]: e.target.value }));
+  const handleSelectChange = (value, id) => setFormData((prev) => ({ ...prev, [id]: value }));
+  const handleFileChange = (event) => setFormData((prev) => ({ ...prev, salesCsv: event.target.files?.[0] ?? null }));
 
-  const handleNumericChange =
-    (id) =>
-    (e) => {
-      const raw = e.target.value;
-      if (raw === "") {
-        setFormData((prev) => ({ ...prev, [id]: "" }));
-        return;
-      }
-      const num = Number(raw);
-      if (!Number.isNaN(num)) setFormData((prev) => ({ ...prev, [id]: num }));
-    };  // keep numeric state clean for payload [web:32]
+  // Stable numeric change handler
+  const handleNumericChange = (id) => (e) => {
+    setFormData((prev) => ({ ...prev, [id]: e.target.value }));
+  };
 
   const handleForecast = async () => {
     if (!formData.salesCsv) {
@@ -94,103 +161,57 @@ export default function WarehouseSetupPage() {
     setError("");
 
     const payload = new FormData();
-    payload.append("file", formData.salesCsv);  // Flask reads request.files["file"] [web:42]
+    payload.append("file", formData.salesCsv);
+
+    const parseToFinite = (s) => {
+      if (typeof s !== "string") return "";
+      const n = Number(s.trim());
+      return Number.isFinite(n) ? n : "";
+    };
 
     if (formData.analysisType === "single") {
-      // Append flat snake_case keys that Flask reads from request.form.get(...)
-      payload.append("service_level", String(formData.serviceLevel));
-      payload.append("lead_time_days", String(formData.leadTimeDays));
-      payload.append("current_inventory", String(formData.currentInventory));
-      payload.append("ordering_cost", String(formData.orderingCost));
-      payload.append("holding_cost", String(formData.holdingCost));
-      payload.append("unit_cost", String(formData.unitCost));  // flat fields for multipart form [web:55]
+      const service_level = parseToFinite(formData.serviceLevel);
+      const lead_time_days = parseToFinite(formData.leadTimeDays);
+      const current_inventory = parseToFinite(formData.currentInventory);
+      const ordering_cost = parseToFinite(formData.orderingCost);
+      const holding_cost = parseToFinite(formData.holdingCost);
+      const unit_cost = parseToFinite(formData.unitCost);
+
+      if (
+        service_level === "" ||
+        lead_time_days === "" ||
+        current_inventory === "" ||
+        ordering_cost === "" ||
+        holding_cost === "" ||
+        unit_cost === ""
+      ) {
+        setError("Please enter valid numeric values for all parameters.");
+        return;
+      }
+
+      payload.append("service_level", String(service_level));
+      payload.append("lead_time_days", String(lead_time_days));
+      payload.append("current_inventory", String(current_inventory));
+      payload.append("ordering_cost", String(ordering_cost));
+      payload.append("holding_cost", String(holding_cost));
+      payload.append("unit_cost", String(unit_cost));
     }
 
     try {
       if (formData.analysisType === "single") {
-        await runSingleForecast(payload).unwrap();  // RTK Query with FormData body (don’t set content-type) [web:23]
+        await runSingleForecast(payload).unwrap();
       } else if (formData.analysisType === "aggregate") {
-        await runAggregateForecast(payload).unwrap();  // same FormData handling [web:23]
+        await runAggregateForecast(payload).unwrap();
       }
-      navigate("/dashboard");  // navigate after success [web:33]
+      navigate("/dashboard");
     } catch (err) {
-      setError(err?.data?.message || "Analysis failed. Please check your data and try again.");  // unwrap error path [web:66]
+      setError(err?.data?.message || "Analysis failed. Please check your data and try again.");
     }
   };
 
   const renderStepContent = () => {
-    const inputStyles =
-      "bg-white border-gray-300 text-gray-800 focus:ring-2 focus:ring-green-500 focus:border-green-500 h-12 text-base rounded-lg";
+    const inputStyles = "bg-white border-gray-300 text-gray-800 focus:ring-2 focus:ring-green-500 focus:border-green-500 h-12 text-base rounded-lg";
     const labelStyles = "text-base font-medium text-gray-700 flex items-center";
-
-    const FileUploadArea = ({ onFileChange, file, requiredColumns }) => (
-      <div className="space-y-6">
-        <div
-          className="flex flex-col items-center justify-center p-12 border-2 border-dashed border-gray-300 rounded-xl hover:border-green-500 hover:bg-green-50 transition-all duration-300 cursor-pointer"
-          onClick={() => document.getElementById("fileInput")?.click()}
-        >
-          <Upload className="w-16 h-16 text-gray-400" />
-          <p className="mt-4 text-xl font-semibold text-gray-700">Drag & drop your file here</p>
-          <p className="text-gray-500">or</p>
-          <Button as="span" variant="outline" className="mt-2 text-green-700 border-green-600 hover:bg-green-600 hover:text-white">
-            Choose a file
-          </Button>
-          <input id="fileInput" type="file" onChange={onFileChange} accept=".csv" className="hidden" />
-        </div>
-        {file && <p className="text-center text-green-700 font-semibold">{file.name}</p>}
-        <p className="text-center text-sm text-gray-600">
-          Required columns:{" "}
-          {requiredColumns
-            .map((col) => (
-              <strong key={col} className="text-gray-800">
-                {col}
-              </strong>
-            ))
-            .reduce((prev, curr) => [prev, ", ", curr])}
-          .
-        </p>
-      </div>
-    );  // basic uploader UI [web:42]
-
-    const NumericField = ({ id, label, placeholder, step, value, docKey }) => {
-      const labelNode = (
-        <>
-          {label}
-          {docKey && (
-            <Link to={`/documentation?highlight=${docKey}`} className="ml-2">
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <button type="button" aria-label={`Learn more about ${label}`} className="ml-2">
-                    <Info className="w-4 h-4 text-gray-500 hover:text-gray-700" />
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Learn more</p>
-                </TooltipContent>
-              </Tooltip>
-            </Link>
-          )}
-        </>
-      );
-
-      return (
-        <div className="space-y-2">
-          <Label htmlFor={id} className={labelStyles}>
-            {labelNode}
-          </Label>
-          <Input
-            id={id}
-            type="number"
-            inputMode="decimal"
-            step={step}
-            placeholder={placeholder}
-            value={value}
-            onChange={handleNumericChange(id)}
-            className={inputStyles}
-          />
-        </div>
-      );
-    };  // numeric inputs for single-product params with optional tooltip/link
 
     switch (step) {
       case 1:
@@ -231,7 +252,7 @@ export default function WarehouseSetupPage() {
               <Input id="contactEmail" type="email" placeholder="e.g., alex.ray@quantum.com" value={formData.contactEmail} onChange={handleInputChange} className={inputStyles} />
             </div>
           </div>
-        );  // step 1 fields [web:32]
+        );
       case 2:
         return (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
@@ -254,22 +275,30 @@ export default function WarehouseSetupPage() {
               <Textarea id="storageLocations" placeholder="Describe your storage layout..." value={formData.storageLocations} onChange={handleInputChange} className={`${inputStyles} h-24`} />
             </div>
           </div>
-        );  // step 2 fields [web:32]
+        );
       case 3:
         if (!formData.analysisType) {
           return (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <Button variant="outline" className="h-48 border-gray-300 text-gray-800 hover:bg-green-600 hover:text-white hover:border-green-600 font-semibold text-xl flex flex-col justify-center items-center" onClick={() => setFormData((prev) => ({ ...prev, analysisType: "single" }))}>
+              <Button
+                variant="outline"
+                className="h-48 border-gray-300 text-gray-800 hover:bg-green-600 hover:text-white hover:border-green-600 font-semibold text-xl flex flex-col justify-center items-center"
+                onClick={() => setFormData((prev) => ({ ...prev, analysisType: "single" }))}
+              >
                 <span>Single Product</span>
                 <span className="text-sm font-normal text-gray-500 mt-2">Optimize a single item.</span>
               </Button>
-              <Button variant="outline" className="h-48 border-gray-300 text-gray-800 hover:bg-green-600 hover:text-white hover:border-green-600 font-semibold text-xl flex flex-col justify-center items-center" onClick={() => setFormData((prev) => ({ ...prev, analysisType: "aggregate" }))}>
+              <Button
+                variant="outline"
+                className="h-48 border-gray-300 text-gray-800 hover:bg-green-600 hover:text-white hover:border-green-600 font-semibold text-xl flex flex-col justify-center items-center"
+                onClick={() => setFormData((prev) => ({ ...prev, analysisType: "aggregate" }))}
+              >
                 <span>Aggregate Business</span>
                 <span className="text-sm font-normal text-black-500 mt-2">Get high-level predictions.</span>
               </Button>
             </div>
           );
-        }  // analysis type chooser [web:32]
+        }
 
         return (
           <div className="space-y-8">
@@ -280,18 +309,61 @@ export default function WarehouseSetupPage() {
             />
             {formData.analysisType === "single" && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-                <NumericField id="serviceLevel" label="Service Level (0.0 - 1.0)" placeholder="e.g., 0.95" step="0.01" value={formData.serviceLevel} docKey="serviceLevel" />
-                <NumericField id="leadTimeDays" label="Lead Time (Days)" placeholder="e.g., 7" value={formData.leadTimeDays} docKey="leadTime" />
-                <NumericField id="currentInventory" label="Current On-Hand Inventory" placeholder="e.g., 250" value={formData.currentInventory} docKey="currentInventory" />
-                <NumericField id="orderingCost" label="Ordering Cost" placeholder="e.g., 100" value={formData.orderingCost} docKey="orderingCost" />
-                <NumericField id="holdingCost" label="Holding Cost" placeholder="e.g., 10" value={formData.holdingCost} docKey="holdingCost" />
-                <NumericField id="unitCost" label="Unit Cost" placeholder="e.g., 50" value={formData.unitCost} docKey="unitCost" />
+                <NumericField 
+                  id="serviceLevel" 
+                  label="Service Level (0.0 - 1.0)" 
+                  placeholder="e.g., 0.95" 
+                  step="0.01" 
+                  value={formData.serviceLevel} 
+                  onChange={handleNumericChange("serviceLevel")}
+                  docKey="serviceLevel" 
+                />
+                <NumericField 
+                  id="leadTimeDays" 
+                  label="Lead Time (Days)" 
+                  placeholder="e.g., 7" 
+                  value={formData.leadTimeDays} 
+                  onChange={handleNumericChange("leadTimeDays")}
+                  docKey="leadTime" 
+                />
+                <NumericField 
+                  id="currentInventory" 
+                  label="Current On-Hand Inventory" 
+                  placeholder="e.g., 250" 
+                  value={formData.currentInventory} 
+                  onChange={handleNumericChange("currentInventory")}
+                  docKey="currentInventory" 
+                />
+                <NumericField 
+                  id="orderingCost" 
+                  label="Ordering Cost" 
+                  placeholder="e.g., 100" 
+                  value={formData.orderingCost} 
+                  onChange={handleNumericChange("orderingCost")}
+                  docKey="orderingCost" 
+                />
+                <NumericField 
+                  id="holdingCost" 
+                  label="Holding Cost" 
+                  placeholder="e.g., 10" 
+                  value={formData.holdingCost} 
+                  onChange={handleNumericChange("holdingCost")}
+                  docKey="holdingCost" 
+                />
+                <NumericField 
+                  id="unitCost" 
+                  label="Unit Cost" 
+                  placeholder="e.g., 50" 
+                  value={formData.unitCost} 
+                  onChange={handleNumericChange("unitCost")}
+                  docKey="unitCost" 
+                />
               </div>
             )}
           </div>
-        ); 
+        );
       default:
-        return null; 
+        return null;
     }
   };
 

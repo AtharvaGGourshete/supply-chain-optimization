@@ -18,6 +18,7 @@ import {
   ShieldCheck,
   LogIn,
   UserPlus,
+  Building2,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -154,68 +155,91 @@ export default function RegisterPage() {
   );
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center p-4 font-poppins overflow-hidden bg-[#f6fbf7]">
-      {/* Ensure parent is relative and content has z-10 */}
-      {/* BG Layer A: animated radial gradients (visible) */}
-      <div className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute -top-1/4 -left-1/4 w-[80vw] h-[80vw] rounded-full bg-emerald-200/50 blur-3xl animate-[pulse_8s_ease-in-out_infinite]" />
-        <div className="absolute -bottom-1/3 -right-1/4 w-[70vw] h:[70vw] rounded-full bg-emerald-300/40 blur-3xl animate-[pulse_10s_ease-in-out_infinite]" />
+    <div className="relative min-h-screen flex items-center justify-between p-8 font-poppins overflow-hidden bg-gradient-to-br from-teal-900 via-teal-800 to-emerald-900">
+      {/* Decorative Background Elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {/* Animated gradient orbs */}
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-emerald-400/20 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-1/3 left-1/3 w-80 h-80 bg-white/10 rounded-full blur-3xl animate-pulse delay-1000" />
+        
+        {/* Grid pattern */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute inset-0" style={{
+            backgroundImage: `linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
+                             linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)`,
+            backgroundSize: '50px 50px'
+          }} />
+        </div>
       </div>
 
-      {/* BG Layer B: isometric grid via safe utility (no inline style) */}
-      <div className="pointer-events-none absolute inset-0 -z-10 opacity-10 [background-image:linear-gradient(120deg,rgba(16,185,129,.25)_1px,transparent_1px),linear-gradient(60deg,rgba(16,185,129,.18)_1px,transparent_1px),linear-gradient(0deg,rgba(16,185,129,.10)_1px,transparent_1px)] [background-size:24px_24px] [background-position:0_0]" />
+      {/* Left Side - Graphics and Branding */}
+      <div className="relative z-10 flex-1 hidden lg:flex flex-col justify-center items-start pl-12 xl:pl-40 space-y-8">
+        {/* Logo/Icon Area */}
+        <div className="space-y-6">
+          <div className="flex items-center space-x-4">
+            <div className="relative">
+              <div className="w-16 h-16 backdrop-blur-sm rounded-2xl flex items-center justify-center">
+                {/* <Building2 className="w-10 h-10 text-emerald-400" /> */}
+                <img src="./shape.png"/>
+              </div>
+              {/* <div className="absolute -top-1 -right-1 w-4 h-4 bg-emerald-400 rounded-full animate-ping" /> */}
+              {/* <div className="absolute -top-1 -right-1 w-4 h-4 bg-emerald-400 rounded-full" /> */}
+            </div>
+            <h1 className="text-4xl font-bold text-white">ChainSaw</h1>
+          </div>
+          
+          <div className="max-w-md space-y-4">
+            <h2 className="text-5xl font-bold text-white leading-tight">
+              Welcome 
+              <span className="block text-emerald-400">Let's onboard.</span>
+            </h2>
+            <p className="text-lg text-white/80 leading-relaxed">
+             Seamless experience in optimizing your supply chain.
+            </p>
+          </div>
+        </div>
 
-      {/* BG Layer C: SVG blobs (now inside absolutely-positioned wrappers with z-index) */}
-      <div className="pointer-events-none absolute -z-10 top-[-80px] left-[-80px] w-[520px] h-[520px] opacity-30">
-        <svg
-          viewBox="0 0 600 600"
-          xmlns="http://www.w3.org/2000/svg"
-          className="w-full h-full"
-        >
-          <defs>
-            <radialGradient id="gradA">
-              <stop offset="0%" stopColor="#34d399" stopOpacity="0.65" />
-              <stop offset="100%" stopColor="#10b981" stopOpacity="0.2" />
-            </radialGradient>
-          </defs>
-          <g transform="translate(300,300)">
-            <path
-              d="M120,-150C160,-120,190,-80,200,-35C210,10,200,60,175,105C150,150,110,190,60,210C10,230,-50,230,-95,205C-140,180,-170,130,-190,80C-210,30,-220,-20,-205,-70C-190,-120,-150,-170,-105,-195C-60,-220,-10,-220,35,-210C80,-200,120,-180,120,-150Z"
-              fill="url(#gradA)"
-            />
-          </g>
-        </svg>
+        {/* Feature Pills */}
+        <div className="flex flex-wrap gap-3 max-w-md">
+          {[
+            { text: "Inventory Optimization" },
+            { text: "Optimize Routes" },
+            { text: "Supplier Scoring" },
+            { text: "Demand Forecasting" }
+          ].map((feature, idx) => (
+            <div
+              key={idx}
+              className="flex items-center space-x-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20 hover:bg-white/20 transition-all duration-300"
+            >
+              <span className="text-xl">{feature.icon}</span>
+              <span className="text-sm text-white font-medium">{feature.text}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Decorative Elements */}
+        <div className="absolute left-0 bottom-20 space-y-4">
+          {[1, 2, 3].map((i) => (
+            <div
+              key={i}
+              className="flex items-center space-x-3 opacity-60"
+              style={{ animationDelay: `${i * 200}ms` }}
+            >
+              <div className="w-3 h-3 bg-emerald-400 rounded-full animate-pulse" />
+              <div className="w-32 h-1 bg-gradient-to-r from-emerald-400/50 to-transparent rounded-full" />
+            </div>
+          ))}
+        </div>
+
+        {/* Floating Cards Animation */}
+        
       </div>
 
-      <div className="pointer-events-none absolute -z-10 bottom-[-100px] right-[-120px] w-[560px] h-[560px] opacity-25 rotate-12">
-        <svg
-          viewBox="0 0 600 600"
-          xmlns="http://www.w3.org/2000/svg"
-          className="w-full h-full"
-        >
-          <defs>
-            <linearGradient id="gradB" x1="0" x2="1">
-              <stop offset="0%" stopColor="#A7F3D0" stopOpacity="0.55" />
-              <stop offset="100%" stopColor="#6EE7B7" stopOpacity="0.25" />
-            </linearGradient>
-          </defs>
-          <g transform="translate(300,300)">
-            <path
-              d="M130,-160C180,-130,220,-90,235,-40C250,10,240,70,210,120C180,170,130,210,75,230C20,250,-40,250,-90,225C-140,200,-180,150,-200,95C-220,40,-220,-20,-200,-75C-180,-130,-140,-180,-90,-205C-40,-230,20,-230,70,-215C120,-200,160,-170,130,-160Z"
-              fill="url(#gradB)"
-            />
-          </g>
-        </svg>
-      </div>
-
-      {/* BG Layer D: noise (escaped data URI in class to keep JIT) */}
-      <div className="pointer-events-none absolute inset-0 -z-10 mix-blend-soft-light opacity-[0.06] [background-image:url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22160%22 height=%22160%22><filter id=%22n%22><feTurbulence type=%22fractalNoise%22 baseFrequency=%220.9%22 numOctaves=%222%22 stitchTiles=%22stitch%22/></filter><rect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23n)%22 opacity=%220.35%22/></svg>')] [background-size:200px_200px]" />
-
-      {/* Content */}
-      <div className="relative z-10 w-full max-w-md space-y-4">
+      {/* Right Side - Form */}
+      <div className="relative z-10 w-full max-w-md lg:mr-12 xl:mr-40">
         <Tabs defaultValue="register" className="w-full">
           <TabsList
-            className={`grid w-full grid-cols-2 mb-4 rounded-xl bg-white/80 backdrop-blur border ${BORDER_COLOR} p-1 shadow-sm`}
+            className={`grid w-full grid-cols-2 mb-4 rounded-xl bg-white/95 backdrop-blur-md border ${BORDER_COLOR} pb-3 shadow-lg`}
           >
             <TabsTrigger
               value="register"
@@ -235,7 +259,7 @@ export default function RegisterPage() {
 
           <TabsContent value="register">
             <Card
-              className={`w-full ${BORDER_COLOR} border shadow-xl bg-white/90 backdrop-blur-sm text-gray-900 rounded-2xl transition-shadow hover:shadow-emerald-200/60`}
+              className={`w-full ${BORDER_COLOR} border shadow-2xl bg-white/95 backdrop-blur-md text-gray-900 rounded-2xl transition-shadow hover:shadow-emerald-200/60`}
             >
               <div className="absolute -inset-px rounded-2xl pointer-events-none border border-emerald-200/50" />
               <CardHeader className="text-center">
@@ -357,7 +381,7 @@ export default function RegisterPage() {
 
           <TabsContent value="login">
             <Card
-              className={`w-full ${BORDER_COLOR} border shadow-xl bg-white/90 backdrop-blur-sm text-gray-900 rounded-2xl transition-shadow hover:shadow-emerald-200/60`}
+              className={`w-full ${BORDER_COLOR} border shadow-2xl bg-white/95 backdrop-blur-md text-gray-900 rounded-2xl transition-shadow hover:shadow-emerald-200/60`}
             >
               <div className="absolute -inset-px rounded-2xl pointer-events-none border border-emerald-200/50" />
               <CardHeader className="text-center">
@@ -432,6 +456,21 @@ export default function RegisterPage() {
           </TabsContent>
         </Tabs>
       </div>
+
+      <style jsx>{`
+        @keyframes float {
+          0%, 100% {
+            transform: translateY(0px);
+          }
+          50% {
+            transform: translateY(-20px);
+          }
+        }
+        
+        .animate-float {
+          animation: float 6s ease-in-out infinite;
+        }
+      `}</style>
     </div>
   );
 }

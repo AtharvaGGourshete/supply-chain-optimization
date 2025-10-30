@@ -5,3 +5,5 @@ prophet
 scipy
 numpy
 joblib
+scikit-learn
+plotly

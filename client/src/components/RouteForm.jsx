@@ -52,7 +52,7 @@ const RouteForm = ({ onRoutesOptimized, onError, setLoading }) => {
       const coordinates = [depotCoords, ...locationCoords];
       const body = { coordinates, profile };
 
-      const res = await fetch(`http://${API_URL}/api/optimize`, {
+      const res = await fetch(`${API_URL}/api/optimize`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),

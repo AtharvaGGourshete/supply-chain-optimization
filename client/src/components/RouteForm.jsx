@@ -11,6 +11,8 @@ import {
 } from "@/components/ui/select";
 import { Route, X } from "lucide-react";
 
+const API_URL = import.meta.env.VITE_API_URL
+
 const geocodeAddress = async (address) => {
   const token = import.meta.env.VITE_MAPBOX_TOKEN;
   const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
@@ -50,7 +52,7 @@ const RouteForm = ({ onRoutesOptimized, onError, setLoading }) => {
       const coordinates = [depotCoords, ...locationCoords];
       const body = { coordinates, profile };
 
-      const res = await fetch("http://localhost:3000/api/optimize", {
+      const res = await fetch(`http://${API_URL}/api/optimize`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),

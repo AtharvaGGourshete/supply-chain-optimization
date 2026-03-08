@@ -19,11 +19,26 @@ app.use(express.json());
 app.use(cookieParser());
 
 const corsOptions = {
-    origin: 'http://localhost:5173',
-    credentials: true,
+  origin: function (origin, callback) {
+    const allowedOrigins = [
+      'http://localhost:5173',
+      'http://localhost:3000',
+      'https://supply-chain-optimization-two.vercel.app', // your vercel URL
+    ];
+
+    // Allow requests with no origin (mobile apps, Postman, curl)
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
 };
 app.use(cors(corsOptions)); 
-
+app.options('*', cors(corsOptions));
 // DB CONNECTION
 connectDB();
 

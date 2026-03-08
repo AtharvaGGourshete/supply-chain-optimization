@@ -1,25 +1,29 @@
-// path: frontend/src/components/ProtectedRoute.jsx
-
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { Navigate, Outlet } from 'react-router-dom';
-import { Sidebar } from './Sidebar'; // Import the Sidebar component
+import { Sidebar } from './Sidebar';
+import { useLoadUserQuery } from '@/features/api/authApi'; // ← add this
 
 const ProtectedRoute = () => {
     const { isAuthenticated } = useSelector((state) => state.auth);
+    const { isLoading } = useLoadUserQuery(); // ← wait for auth check
 
-    // If the user is not authenticated, redirect them to the landing page.
+    // Show spinner while checking auth
+    if (isLoading) {
+        return (
+            <div className="flex items-center justify-center min-h-screen bg-[#143234]">
+                <div className="animate-spin h-10 w-10 border-4 border-green-600 border-t-transparent rounded-full"></div>
+            </div>
+        );
+    }
+
     if (!isAuthenticated) {
         return <Navigate to="/" replace />;
     }
 
-    // If the user IS authenticated, render the main application layout.
     return (
         <div className="flex h-screen bg-[#143234]">
-            {/* The Sidebar is now part of the protected layout */}
             <Sidebar />
-            
-            {/* The Outlet component renders the matched child route (e.g., Dashboard, Warehouse, etc.) */}
             <main className="flex-1 overflow-y-auto">
                 <Outlet />
             </main>

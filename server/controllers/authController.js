@@ -7,21 +7,15 @@ import { validationResult } from "express-validator";
 // Helper function to generate token and set the HTTP-Only cookie
 const sendTokenResponse = (user, statusCode, message, res) => {
     const token = generateToken({ userId: user._id });
-
-    const options = {
-        expires: new Date(Date.now() + parseInt(process.env.COOKIE_EXPIRE) * 24 * 60 * 60 * 1000),
-        httpOnly: true, // Prevents client-side script access
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'Lax',
-    };
-
-    // Prepare user object for the response, excluding the password
     const userResponse = { id: user._id, name: user.name, email: user.email };
     
-    // Set the cookie named 'token' and send the response
-    res.status(statusCode)
-       .cookie('token', token, options)
-       .json({ success: true, message, user: userResponse });
+    // Send token in response body instead of cookie
+    res.status(statusCode).json({ 
+        success: true, 
+        message, 
+        user: userResponse,
+        token  // ← send token here
+    });
 };
 
 // Register a new user
@@ -60,20 +54,16 @@ export const login = async (req, res) => {
         if (!user || !(await user.comparePassword(password))) {
             return res.status(401).json({ success: false, message: 'Invalid credentials' });
         }
-
+        console.log(res)
         sendTokenResponse(user, 200, 'Login successful', res);
     } catch (error) {
         res.status(500).json({ success: false, message: 'Internal server error' });
+        console.log(res)
     }
 };
 
 // Logout user
 export const logout = (req, res) => {
-    // Clear the cookie by setting its expiration to a past date
-    res.cookie('token', 'none', {
-        expires: new Date(Date.now() + 5 * 1000), // 5 seconds
-        httpOnly: true,
-    });
     res.status(200).json({ success: true, message: 'Logout successful' });
 };
 

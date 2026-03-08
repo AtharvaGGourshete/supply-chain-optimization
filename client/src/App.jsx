@@ -16,7 +16,11 @@ import SupplierSelection from './pages/SupplierSelectionPage';
 import { Toaster } from "./components/ui/sonner";
 
 const AppContent = () => {
-    const { isLoading } = useLoadUserQuery();
+    const { isLoading, refetch } = useLoadUserQuery(undefined, {
+        refetchOnMountOrArgChange: true,
+        refetchOnFocus: true,       // ← refetch when tab regains focus
+        refetchOnReconnect: true,   // ← refetch on reconnect
+    });
 
     if (isLoading) {
         return (

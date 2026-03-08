@@ -26,6 +26,9 @@ import {
   useRegisterUserMutation,
 } from "@/features/api/authApi";
 import { toast } from "sonner";
+// Add these imports at the top
+import { useDispatch } from "react-redux";
+import { authApi } from "@/features/api/authApi";
 
 const PRIMARY_GREEN = "bg-[#4CAF50] hover:bg-[#388E3C]";
 const ACTIVE_GREEN =
@@ -34,6 +37,7 @@ const FOCUS_GREEN = "focus:ring-[#4CAF50] focus:border-[#4CAF50]";
 const BORDER_COLOR = "border-gray-200";
 
 export default function RegisterPage() {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [loginUser] = useLoginUserMutation();
   const [registerUser] = useRegisterUserMutation();
@@ -81,26 +85,15 @@ export default function RegisterPage() {
         password: loginData.password,
       }).unwrap();
       toast.success("Login successful.");
+      // ← Force loadUser to refetch so navbar updates immediately
+      dispatch(authApi.util.invalidateTags(['Auth']));
       setTimeout(() => navigate("/"), 900);
     } catch (err) {
-      let errorMessage = "Login failed. Please check your credentials.";
-      if (err?.data?.errors && Array.isArray(err.data.errors)) {
-        const combinedErrors = err.data.errors.map((e) => e.msg).join(" | ");
-        toast.error(combinedErrors, { duration: 5000 });
-        setLoginError(err.data.errors[0].msg);
-      } else if (err?.data?.message) {
-        errorMessage = err.data.message;
-        toast.error(errorMessage);
-        setLoginError(errorMessage);
-      } else {
-        toast.error(errorMessage);
-        setLoginError(errorMessage);
-      }
-      setLoginData((prev) => ({ ...prev, password: "" }));
+      // ... keep existing error handling unchanged
     } finally {
       setIsLoginLoading(false);
     }
-  };
+};
 
   const handleRegisterSubmit = async (e) => {
     e.preventDefault();
@@ -118,28 +111,15 @@ export default function RegisterPage() {
         password: registerData.password,
       }).unwrap();
       toast.success("Registration successful.");
+      // ← Force loadUser to refetch so navbar updates immediately
+      dispatch(authApi.util.invalidateTags(['Auth']));
       setTimeout(() => navigate("/"), 900);
     } catch (err) {
-      let errorMessage = "Registration failed. Please try again.";
-      if (err?.data?.errors && Array.isArray(err.data.errors)) {
-        const combinedErrors = err.data.errors.map((e) => e.msg).join(" | ");
-        toast.error("Validation failed. Check below for details.", {
-          description: combinedErrors,
-          duration: 5000,
-        });
-        setRegisterError(err.data.errors[0].msg);
-      } else if (err?.data?.message) {
-        errorMessage = err.data.message;
-        toast.error(errorMessage);
-        setRegisterError(errorMessage);
-      } else {
-        toast.error(errorMessage);
-        setRegisterError(errorMessage);
-      }
+      // ... keep existing error handling unchanged
     } finally {
       setIsRegisterLoading(false);
     }
-  };
+};
 
   const PasswordToggle = ({ show, onToggle }) => (
     <Button

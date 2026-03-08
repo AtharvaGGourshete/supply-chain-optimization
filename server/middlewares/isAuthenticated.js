@@ -1,13 +1,18 @@
-// path: server/middlewares/isAuthenticated.js
-
 import jwt from "jsonwebtoken";
 import User from "../models/users.js";
 
 const isAuthenticated = async (req, res, next) => {
     try {
-        // --- THE CRITICAL FIX ---
-        // Read the cookie named "token", which matches what authController sets.
-        const { token } = req.cookies;
+        let token;
+
+        // Check Authorization header first (Bearer token)
+        if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+            token = req.headers.authorization.split(' ')[1];
+        }
+        // Fallback to cookie
+        else if (req.cookies && req.cookies.token) {
+            token = req.cookies.token;
+        }
 
         if (!token) {
             return res.status(401).json({ success: false, message: "Not authenticated. No token provided." });
@@ -18,11 +23,9 @@ const isAuthenticated = async (req, res, next) => {
             return res.status(401).json({ success: false, message: "Not authenticated. Invalid token." });
         }
 
-        // Attach the full user object to the request. This is what your other controllers need.
         req.user = await User.findById(decoded.userId).select("-password");
-        
         if (!req.user) {
-             return res.status(404).json({ success: false, message: "User not found." });
+            return res.status(404).json({ success: false, message: "User not found." });
         }
 
         next();

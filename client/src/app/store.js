@@ -1,4 +1,3 @@
-// store.js
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import {
   persistStore,
@@ -6,7 +5,7 @@ import {
   FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER
 } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
-
+import { setupListeners } from "@reduxjs/toolkit/query"; // ← add this
 import analysisReducer from "../features/analysisSlice";
 import { analysisApi } from "../features/api/analysisApi";
 import { userApi } from "../features/api/userApi";
@@ -25,7 +24,7 @@ const persistConfig = {
   key: 'root',
   storage,
   version: 1,
-  whitelist: ['analysis'], // Persist only analysis slice
+  whitelist: ['analysis', 'auth'],
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
@@ -37,5 +36,7 @@ export const store = configureStore({
       serializableCheck: { ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER] },
     }).concat(analysisApi.middleware, userApi.middleware, authApi.middleware),
 });
+
+setupListeners(store.dispatch); // ← add this
 
 export const persistor = persistStore(store);

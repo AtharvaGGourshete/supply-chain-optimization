@@ -5,29 +5,29 @@ const API_BASE = import.meta.env.VITE_API_URL;
 export const analysisApi = createApi({
   reducerPath: "analysisApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: API_BASE + "/api", // Base URL for these routes
-    credentials: "include",
+    baseUrl: API_BASE + "/api",
+    prepareHeaders: (headers) => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        headers.set('Authorization', `Bearer ${token}`);
+      }
+      return headers;
+    },
   }),
-  tagTypes: ["Analysis"], // A tag for caching invalidation
+  tagTypes: ["Analysis"],
   endpoints: (builder) => ({
-    
-    // Query to get existing analysis data for the user
     getAnalysisData: builder.query({
       query: () => "/analysis-results",
-      providesTags: ["Analysis"], // This query provides the 'Analysis' tag
+      providesTags: ["Analysis"],
     }),
-
-    // Mutation for single product forecast
     runSingleForecast: builder.mutation({
       query: (formData) => ({
         url: "/forecast-and-optimize-product",
         method: "POST",
-        body: formData, // Directly use FormData
+        body: formData,
       }),
-      invalidatesTags: ["Analysis"], // On success, invalidate the 'Analysis' tag to force a refetch
+      invalidatesTags: ["Analysis"],
     }),
-
-    // Mutation for aggregate forecast
     runAggregateForecast: builder.mutation({
       query: (formData) => ({
         url: "/forecast-aggregate-data",
@@ -36,7 +36,6 @@ export const analysisApi = createApi({
       }),
       invalidatesTags: ["Analysis"],
     }),
-
   }),
 });
 

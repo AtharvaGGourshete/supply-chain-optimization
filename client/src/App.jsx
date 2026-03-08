@@ -1,8 +1,8 @@
-// path: frontend/src/App.jsx
 import React from 'react';
 import { Route, Routes, BrowserRouter as Router } from "react-router-dom";
 import { Provider } from "react-redux";
-import { store } from "./app/store";
+import { store, persistor } from "./app/store";  // ← add persistor
+import { PersistGate } from 'redux-persist/integration/react';  // ← add this
 import { useLoadUserQuery } from "./features/api/authApi";
 import ProtectedRoute from "./components/ProtectedRoute";
 import LandingPage from "./pages/LandingPage";
@@ -18,8 +18,8 @@ import { Toaster } from "./components/ui/sonner";
 const AppContent = () => {
     const { isLoading, refetch } = useLoadUserQuery(undefined, {
         refetchOnMountOrArgChange: true,
-        refetchOnFocus: true,       // ← refetch when tab regains focus
-        refetchOnReconnect: true,   // ← refetch on reconnect
+        refetchOnFocus: true,
+        refetchOnReconnect: true,
     });
 
     if (isLoading) {
@@ -50,10 +50,12 @@ const AppContent = () => {
 function App() {
     return (
         <Provider store={store}>
-            <Router>
-                <AppContent />
-            </Router>
-            <Toaster richColors/>
+            <PersistGate loading={null} persistor={persistor}> {/* ← added */}
+                <Router>
+                    <AppContent />
+                </Router>
+                <Toaster richColors/>
+            </PersistGate>
         </Provider>
     );
 }

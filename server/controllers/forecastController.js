@@ -6,8 +6,8 @@ import User from '../models/users.js'; // Import the User model
 
 const unlinkAsync = promisify(fs.unlink);
 
-const FLASK_API_URL_PRODUCT = 'http://127.0.0.1:5000/forecast-and-optimize-product';
-const FLASK_API_URL_AGGREGATE = 'http://127.0.0.1:5000/forecast-aggregate-data';
+const FLASK_API_URL_PRODUCT = `${process.env.ML_SERVICE_URL}/forecast-and-optimize-product`;
+const FLASK_API_URL_AGGREGATE = `${process.env.ML_SERVICE_URL}/forecast-aggregate-data`;
 
 // Helper to save analysis data
 const saveAnalysisToUser = async (userId, analysisType, data, fileInfo) => {
